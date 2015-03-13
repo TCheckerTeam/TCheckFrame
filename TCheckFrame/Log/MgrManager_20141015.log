@@ -1,0 +1,557 @@
+(D) [22:23:19][ThreadManagerMainSub.java:75] datalen : 00000006
+(D) [22:23:19][ThreadManagerMainSub.java:93] datacmd : READ_TLINEINFO                  
+(D) [22:23:19][ThreadManagerMainSub.java:108] databuf : NODATA
+(D) [22:23:19][ThreadManagerMainSub.java:187] Response : 
+00000598AP01	50001	2	1	0	4	10	0	4	0	4	4	6	0
+AP02	50002	2	1	1	50	10	11	4	0	4	4	6	0
+AP03	50003	2	1	1	50	11	11	4	0	4	4	6	0
+AP04	50004	2	1	1	50	12	11	4	0	4	4	6	0
+AP05	50005	7	1	3	0	14	0	0	0	4	4	6	0
+AP06	50006	2	1	2	0	13	0	90	0	4	4	6	0
+AP07	50007	2	1	0	4	50	0	4	0	4	4	6	0
+AP08	50089	2	1	1	50	11	11	4	0	4	4	6	0
+AP09	50089	2	1	1	50	11	11	4	0	4	4	6	0
+AP10	50010	2	1	1	60	11	21	4	0	4	4	6	10
+AP11	50011	2	1	1	50	11	11	4	0	4	4	6	0
+AP12	50012	2	1	1	50	11	11	4	0	4	4	6	0
+AP13	50013	2	1	0	4	10	0	4	0	4	4	6	0
+AP14	50014	2	1	1	50	11	11	4	0	4	4	6	0
+AP15	50015	2	1	1	50	99	11	4	0	4	4	6	0
+AP16	50016	2	1	0	4	99	0	4	0	4	4	6	0
+
+(D) [22:23:19][ThreadManagerMainSub.java:200] Thread End 
+(D) [22:23:25][ThreadManagerMainSub.java:75] datalen : 00000009
+(D) [22:23:25][ThreadManagerMainSub.java:93] datacmd : READ_TCPMSGREQ_COMMHEAD         
+(D) [22:23:25][ThreadManagerMainSub.java:108] databuf : AP01	READ
+(D) [22:23:25][ThreadManagerMainSub.java:187] Response : 
+00000008NOTEXIST
+(D) [22:23:25][ThreadManagerMainSub.java:200] Thread End 
+(D) [22:23:25][ThreadManagerMainSub.java:75] datalen : 00000028
+(D) [22:23:25][ThreadManagerMainSub.java:93] datacmd : READ_TCPMSGREQ                  
+(D) [22:23:25][ThreadManagerMainSub.java:108] databuf : user01	AP01	0200	500001	READ
+(D) [22:23:25][ThreadManagerMainSub.java:187] Response : 
+00000387전문종별	kind_code	CHAR	4	<NODATA>
+거래코드	tx_code	CHAR	6	<NODATA>
+송수신Flag	sr_flag	CHAR	1	<NODATA>
+전송일자	senddata	CHAR	8	<NODATA>
+전송시간	sendtime	CHAR	6	<NODATA>
+비고	remark	CHAR	21	<NODATA>
+주민(사업자)등록번호	REG_NUMBER	CHAR	13	<NODATA>
+주민(사업자)등록번호 구분	REG_GUBUN	CHAR	1	<NODATA>
+성명(대표자)	OWN_NAME	CHAR	20	<NODATA>
+세금우대 총 한도 금액	TAX_MAX	CHAR	10	<NODATA>
+
+(D) [22:23:25][ThreadManagerMainSub.java:200] Thread End 
+(D) [22:23:25][ThreadManagerMainSub.java:75] datalen : 00000016
+(D) [22:23:25][ThreadManagerMainSub.java:93] datacmd : READ_RESLINKONE                 
+(D) [22:23:25][ThreadManagerMainSub.java:108] databuf : AP01	0200	500001
+(D) [22:23:25][ThreadManagerMainSub.java:187] Response : 
+00000009NOT-FOUND
+(D) [22:23:25][ThreadManagerMainSub.java:200] Thread End 
+(D) [22:23:25][ThreadManagerMainSub.java:75] datalen : 00000028
+(D) [22:23:25][ThreadManagerMainSub.java:93] datacmd : READ_TCPMSGRES                  
+(D) [22:23:25][ThreadManagerMainSub.java:108] databuf : user01	AP01	0200	500001	READ
+(D) [22:23:25][ThreadManagerMainSub.java:187] Response : 
+00000387전문종별	kind_code	CHAR	4	<NODATA>
+거래코드	tx_code	CHAR	6	<NODATA>
+송수신Flag	sr_flag	CHAR	1	<NODATA>
+전송일자	senddata	CHAR	8	<NODATA>
+전송시간	sendtime	CHAR	6	<NODATA>
+비고	remark	CHAR	21	<NODATA>
+주민(사업자)등록번호	REG_NUMBER	CHAR	13	<NODATA>
+주민(사업자)등록번호 구분	REG_GUBUN	CHAR	1	<NODATA>
+성명(대표자)	OWN_NAME	CHAR	20	<NODATA>
+세금우대 총 한도 금액	TAX_MAX	CHAR	10	<NODATA>
+
+(D) [22:23:25][ThreadManagerMainSub.java:200] Thread End 
+(D) [22:23:25][ThreadManagerMainSub.java:75] datalen : 00000006
+(D) [22:23:25][ThreadManagerMainSub.java:93] datacmd : READ_TLINEINFO                  
+(D) [22:23:25][ThreadManagerMainSub.java:108] databuf : NODATA
+(D) [22:23:25][ThreadManagerMainSub.java:187] Response : 
+00000598AP01	50001	2	1	0	4	10	0	4	0	4	4	6	0
+AP02	50002	2	1	1	50	10	11	4	0	4	4	6	0
+AP03	50003	2	1	1	50	11	11	4	0	4	4	6	0
+AP04	50004	2	1	1	50	12	11	4	0	4	4	6	0
+AP05	50005	7	1	3	0	14	0	0	0	4	4	6	0
+AP06	50006	2	1	2	0	13	0	90	0	4	4	6	0
+AP07	50007	2	1	0	4	50	0	4	0	4	4	6	0
+AP08	50089	2	1	1	50	11	11	4	0	4	4	6	0
+AP09	50089	2	1	1	50	11	11	4	0	4	4	6	0
+AP10	50010	2	1	1	60	11	21	4	0	4	4	6	10
+AP11	50011	2	1	1	50	11	11	4	0	4	4	6	0
+AP12	50012	2	1	1	50	11	11	4	0	4	4	6	0
+AP13	50013	2	1	0	4	10	0	4	0	4	4	6	0
+AP14	50014	2	1	1	50	11	11	4	0	4	4	6	0
+AP15	50015	2	1	1	50	99	11	4	0	4	4	6	0
+AP16	50016	2	1	0	4	99	0	4	0	4	4	6	0
+
+(D) [22:23:25][ThreadManagerMainSub.java:200] Thread End 
+(D) [22:23:27][ThreadManagerMainSub.java:75] datalen : 00000430
+(D) [22:23:27][ThreadManagerMainSub.java:93] datacmd : SEND_TCPMAPPERTYPEMSG           
+(D) [22:23:27][ThreadManagerMainSub.java:108] databuf : user01	AP01	0200	500001	매퍼전송<DATAGUBUN>전문종별	kind_code	CHAR	4	<NODATA>
+거래코드	tx_code	CHAR	6	<NODATA>
+송수신Flag	sr_flag	CHAR	1	<NODATA>
+전송일자	senddata	CHAR	8	<NODATA>
+전송시간	sendtime	CHAR	6	<NODATA>
+비고	remark	CHAR	21	<NODATA>
+주민(사업자)등록번호	REG_NUMBER	CHAR	13	<NODATA>
+주민(사업자)등록번호 구분	REG_GUBUN	CHAR	1	<NODATA>
+성명(대표자)	OWN_NAME	CHAR	20	<NODATA>
+세금우대 총 한도 금액	TAX_MAX	CHAR	10	<NODATA>
+
+(D) [22:23:27][ThreadManagerMainSub.java:1306] 요청공통부:
+(D) [22:23:27][ThreadManagerMainSub.java:1307] 응답공통부:
+(D) [22:23:27][ThreadManagerMainSub.java:187] Response : 
+000000900210      R                                                                               
+(D) [22:23:27][ThreadManagerMainSub.java:200] Thread End 
+(D) [23:00:10][ThreadManagerMainSub.java:75] datalen : 00000011
+(D) [23:00:10][ThreadManagerMainSub.java:93] datacmd : CHECK_USERID                    
+(D) [23:00:10][ThreadManagerMainSub.java:108] databuf : user01	1234
+(D) [23:00:10][ThreadManagerMainSub.java:187] Response : 
+000000021
+
+(D) [23:00:10][ThreadManagerMainSub.java:200] Thread End 
+(D) [23:00:10][ThreadManagerMainSub.java:75] datalen : 00000006
+(D) [23:00:10][ThreadManagerMainSub.java:93] datacmd : READ_USER                       
+(D) [23:00:10][ThreadManagerMainSub.java:108] databuf : user01
+(D) [23:00:10][ThreadManagerMainSub.java:187] Response : 
+00000033user01	1234	김학명	없음	전체권한
+
+(D) [23:00:10][ThreadManagerMainSub.java:200] Thread End 
+(D) [23:00:10][ThreadManagerMainSub.java:75] datalen : 00000006
+(D) [23:00:10][ThreadManagerMainSub.java:93] datacmd : READ_PERMIT                     
+(D) [23:00:10][ThreadManagerMainSub.java:108] databuf : user01
+(D) [23:00:10][ThreadManagerMainSub.java:187] Response : 
+00003564AP01	통신헤더방식업무	0200	[0200] 일반거래	100005	SimulToAnyBodyByPass매핑	N
+AP01	통신헤더방식업무	0200	[0200] 일반거래	200005	AnyToSimulBodyByPass매핑	N
+AP01	통신헤더방식업무	0200	[0200] 일반거래	500001	SimulToAny일반	N
+AP01	통신헤더방식업무	0200	[0200] 일반거래	500002	SimulToAny배열1차	N
+AP01	통신헤더방식업무	0200	[0200] 일반거래	500003	SimulToAny배열2차	N
+AP01	통신헤더방식업무	0200	[0200] 일반거래	500004	SimulToAny배열3차	N
+AP01	통신헤더방식업무	0200	[0200] 일반거래	500006	SimulToAny사용자정의매핑	N
+AP01	통신헤더방식업무	0200	[0200] 일반거래	500007	SimulToAny비정형데이타매핑	N
+AP01	통신헤더방식업무	0200	[0200] 일반거래	600001	AnyToSimul일반	N
+AP01	통신헤더방식업무	0200	[0200] 일반거래	600002	AnyToSimul배열1차	N
+AP01	통신헤더방식업무	0200	[0200] 일반거래	600003	AnyToSimul배열2차	N
+AP01	통신헤더방식업무	0200	[0200] 일반거래	600004	AnyToSimul배열3차	N
+AP01	통신헤더방식업무	0200	[0200] 일반거래	600006	AnyToSimul사용자정의매핑	N
+AP01	통신헤더방식업무	0200	[0200] 일반거래	600007	AnyToSimul비정형데이타매핑	N
+AP02	공통헤더 길이필드 제외한 업무	0200	[0200] 일반거래	500001	SimulToAny일반	N
+AP02	공통헤더 길이필드 제외한 업무	0200	[0200] 일반거래	600001	AnyToSimul일반	N
+AP03	공통헤더 길이필드 포함한 업무	0200	[0200] 일반거래	500001	SimulToAny일반	N
+AP03	공통헤더 길이필드 포함한 업무	0200	[0200] 일반거래	600001	AnyToSimul일반	N
+AP04	공통헤더 BODY부 길이인 업무	0200	[0200] 일반거래	500001	SimulToAny일반	N
+AP04	공통헤더 BODY부 길이인 업무	0200	[0200] 일반거래	600001	AnyToSimul일반	N
+AP05	END문자방식업무	0200	[0200] 일반거래	500001	SimulToAny일반	N
+AP05	END문자방식업무	0200	[0200] 일반거래	600001	AnyToSimul일반	N
+AP06	고정길이방식업무	0200	[0200] 일반거래	500001	SimulToAny일반	N
+AP06	고정길이방식업무	0200	[0200] 일반거래	600001	AnyToSimul일반	N
+AP07	통신헤더방식길이HEX업무	0200	[0200] 일반거래	500001	SimulToAny일반	N
+AP07	통신헤더방식길이HEX업무	0200	[0200] 일반거래	600001	AnyToSimul일반	N
+AP08	공통헤더 길이필드 포함한 공유업무A	0200	[0200] 일반거래	500001	SimulToAny일반	N
+AP08	공통헤더 길이필드 포함한 공유업무A	0200	[0200] 일반거래	600001	AnyToSimul일반	N
+AP09	공통헤더 길이필드 포함한 공유업무B	0200	[0200] 일반거래	500001	SimulToAny일반	N
+AP09	공통헤더 길이필드 포함한 공유업무B	0200	[0200] 일반거래	600001	AnyToSimul일반	N
+AP10	공통헤더 길이필드 포함한 종별거래offset 증감	0200	[0200] 일반거래	500001	SimulToAny일반	N
+AP10	공통헤더 길이필드 포함한 종별거래offset 증감	0200	[0200] 일반거래	600001	AnyToSimul일반	N
+AP11	응답업는 거래A	0200	[0200] 일반거래	500001	SimulToAny일반	N
+AP11	응답업는 거래A	0200	[0200] 일반거래	600001	AnyToSimul일반	N
+AP12	응답업는 거래B	0200	[0200] 일반거래	500001	SimulToAny일반	N
+AP12	응답업는 거래B	0200	[0200] 일반거래	600001	AnyToSimul일반	N
+AP13	통신헤더 사용자헤더 제외업무	0200	[0200] 일반거래	500001	SimulToAny일반	N
+AP13	통신헤더 사용자헤더 제외업무	0200	[0200] 일반거래	600001	AnyToSimul일반	N
+AP14	공통헤더 사용자헤더 제외업무	0200	[0200] 일반거래	500001	SimulToAny일반	N
+AP14	공통헤더 사용자헤더 제외업무	0200	[0200] 일반거래	600001	AnyToSimul일반	N
+AP15	공통헤더 길이정보 변경업무	0200	[0200] 일반거래	500001	SimulToAny일반	N
+AP15	공통헤더 길이정보 변경업무	0200	[0200] 일반거래	600001	AnyToSimul일반	N
+AP16	통신헤더 길이정보 변경업무	0200	[0200] 일반거래	500001	SimulToAny일반	N
+AP16	통신헤더 길이정보 변경업무	0200	[0200] 일반거래	600001	AnyToSimul일반	N
+C003	기업은행방카순전송	0200	업무전문	CO0041	계좌정보조회	N
+C005	외환은행방카순전송	0200	업무전문	CO0041	계좌정보조회	N
+C020	우리은행방카순전송	0200	업무전문	055100	계좌정보조회	N
+D020	우리은행방카역전송	0200	업무전문	055100	계좌정보조회	N
+
+(D) [23:00:10][ThreadManagerMainSub.java:200] Thread End 
+(D) [23:00:10][ThreadManagerMainSub.java:75] datalen : 00000006
+(D) [23:00:10][ThreadManagerMainSub.java:93] datacmd : READ_INOUTTXTCP                 
+(D) [23:00:10][ThreadManagerMainSub.java:108] databuf : NODATA
+(D) [23:00:10][ThreadManagerMainSub.java:187] Response : 
+00003324I	AP01	통신헤더방식업무	0200	[0200] 일반거래	100005	SimulToAnyBodyByPass매핑
+I	AP01	통신헤더방식업무	0200	[0200] 일반거래	500001	SimulToAny일반
+I	AP01	통신헤더방식업무	0200	[0200] 일반거래	500002	SimulToAny배열1차
+I	AP01	통신헤더방식업무	0200	[0200] 일반거래	500003	SimulToAny배열2차
+I	AP01	통신헤더방식업무	0200	[0200] 일반거래	500004	SimulToAny배열3차
+I	AP01	통신헤더방식업무	0200	[0200] 일반거래	500006	SimulToAny사용자정의매핑
+I	AP01	통신헤더방식업무	0200	[0200] 일반거래	500007	SimulToAny비정형데이타매핑
+I	AP02	공통헤더 길이필드 제외한 업무	0200	[0200] 일반거래	500001	SimulToAny일반
+I	AP03	공통헤더 길이필드 포함한 업무	0200	[0200] 일반거래	500001	SimulToAny일반
+I	AP04	공통헤더 BODY부 길이인 업무	0200	[0200] 일반거래	500001	SimulToAny일반
+I	AP05	END문자방식업무	0200	[0200] 일반거래	500001	SimulToAny일반
+I	AP06	고정길이방식업무	0200	[0200] 일반거래	500001	SimulToAny일반
+I	AP07	통신헤더방식길이HEX업무	0200	[0200] 일반거래	500001	SimulToAny일반
+I	AP08	공통헤더 길이필드 포함한 공유업무A	0200	[0200] 일반거래	500001	SimulToAny일반
+I	AP09	공통헤더 길이필드 포함한 공유업무B	0200	[0200] 일반거래	500001	SimulToAny일반
+I	AP10	공통헤더 길이필드 포함한 종별거래offset 증감	0200	[0200] 일반거래	500001	SimulToAny일반
+I	AP11	응답업는 거래A	0200	[0200] 일반거래	500001	SimulToAny일반
+I	AP12	응답업는 거래B	0200	[0200] 일반거래	500001	SimulToAny일반
+I	AP13	통신헤더 사용자헤더 제외업무	0200	[0200] 일반거래	500001	SimulToAny일반
+I	AP14	공통헤더 사용자헤더 제외업무	0200	[0200] 일반거래	500001	SimulToAny일반
+I	AP15	공통헤더 길이정보 변경업무	0200	[0200] 일반거래	500001	SimulToAny일반
+I	AP16	통신헤더 길이정보 변경업무	0200	[0200] 일반거래	500001	SimulToAny일반
+O	AP01	통신헤더방식업무	0200	[0200] 일반거래	200005	AnyToSimulBodyByPass매핑
+O	AP01	통신헤더방식업무	0200	[0200] 일반거래	600001	AnyToSimul일반
+O	AP01	통신헤더방식업무	0200	[0200] 일반거래	600002	AnyToSimul배열1차
+O	AP01	통신헤더방식업무	0200	[0200] 일반거래	600003	AnyToSimul배열2차
+O	AP01	통신헤더방식업무	0200	[0200] 일반거래	600004	AnyToSimul배열3차
+O	AP01	통신헤더방식업무	0200	[0200] 일반거래	600006	AnyToSimul사용자정의매핑
+O	AP01	통신헤더방식업무	0200	[0200] 일반거래	600007	AnyToSimul비정형데이타매핑
+O	AP02	공통헤더 길이필드 제외한 업무	0200	[0200] 일반거래	600001	AnyToSimul일반
+O	AP03	공통헤더 길이필드 포함한 업무	0200	[0200] 일반거래	600001	AnyToSimul일반
+O	AP04	공통헤더 BODY부 길이인 업무	0200	[0200] 일반거래	600001	AnyToSimul일반
+O	AP05	END문자방식업무	0200	[0200] 일반거래	600001	AnyToSimul일반
+O	AP06	고정길이방식업무	0200	[0200] 일반거래	600001	AnyToSimul일반
+O	AP07	통신헤더방식길이HEX업무	0200	[0200] 일반거래	600001	AnyToSimul일반
+O	AP08	공통헤더 길이필드 포함한 공유업무A	0200	[0200] 일반거래	600001	AnyToSimul일반
+O	AP09	공통헤더 길이필드 포함한 공유업무B	0200	[0200] 일반거래	600001	AnyToSimul일반
+O	AP10	공통헤더 길이필드 포함한 종별거래offset 증감	0200	[0200] 일반거래	600001	AnyToSimul일반
+O	AP11	응답업는 거래A	0200	[0200] 일반거래	600001	AnyToSimul일반
+O	AP12	응답업는 거래B	0200	[0200] 일반거래	600001	AnyToSimul일반
+O	AP13	통신헤더 사용자헤더 제외업무	0200	[0200] 일반거래	600001	AnyToSimul일반
+O	AP14	공통헤더 사용자헤더 제외업무	0200	[0200] 일반거래	600001	AnyToSimul일반
+O	AP15	공통헤더 길이정보 변경업무	0200	[0200] 일반거래	600001	AnyToSimul일반
+O	AP16	통신헤더 길이정보 변경업무	0200	[0200] 일반거래	600001	AnyToSimul일반
+
+(D) [23:00:10][ThreadManagerMainSub.java:200] Thread End 
+(D) [23:00:10][ThreadManagerMainSub.java:75] datalen : 00000006
+(D) [23:00:10][ThreadManagerMainSub.java:93] datacmd : READ_PERMIT                     
+(D) [23:00:10][ThreadManagerMainSub.java:108] databuf : user01
+(D) [23:00:10][ThreadManagerMainSub.java:187] Response : 
+00003564AP01	통신헤더방식업무	0200	[0200] 일반거래	100005	SimulToAnyBodyByPass매핑	N
+AP01	통신헤더방식업무	0200	[0200] 일반거래	200005	AnyToSimulBodyByPass매핑	N
+AP01	통신헤더방식업무	0200	[0200] 일반거래	500001	SimulToAny일반	N
+AP01	통신헤더방식업무	0200	[0200] 일반거래	500002	SimulToAny배열1차	N
+AP01	통신헤더방식업무	0200	[0200] 일반거래	500003	SimulToAny배열2차	N
+AP01	통신헤더방식업무	0200	[0200] 일반거래	500004	SimulToAny배열3차	N
+AP01	통신헤더방식업무	0200	[0200] 일반거래	500006	SimulToAny사용자정의매핑	N
+AP01	통신헤더방식업무	0200	[0200] 일반거래	500007	SimulToAny비정형데이타매핑	N
+AP01	통신헤더방식업무	0200	[0200] 일반거래	600001	AnyToSimul일반	N
+AP01	통신헤더방식업무	0200	[0200] 일반거래	600002	AnyToSimul배열1차	N
+AP01	통신헤더방식업무	0200	[0200] 일반거래	600003	AnyToSimul배열2차	N
+AP01	통신헤더방식업무	0200	[0200] 일반거래	600004	AnyToSimul배열3차	N
+AP01	통신헤더방식업무	0200	[0200] 일반거래	600006	AnyToSimul사용자정의매핑	N
+AP01	통신헤더방식업무	0200	[0200] 일반거래	600007	AnyToSimul비정형데이타매핑	N
+AP02	공통헤더 길이필드 제외한 업무	0200	[0200] 일반거래	500001	SimulToAny일반	N
+AP02	공통헤더 길이필드 제외한 업무	0200	[0200] 일반거래	600001	AnyToSimul일반	N
+AP03	공통헤더 길이필드 포함한 업무	0200	[0200] 일반거래	500001	SimulToAny일반	N
+AP03	공통헤더 길이필드 포함한 업무	0200	[0200] 일반거래	600001	AnyToSimul일반	N
+AP04	공통헤더 BODY부 길이인 업무	0200	[0200] 일반거래	500001	SimulToAny일반	N
+AP04	공통헤더 BODY부 길이인 업무	0200	[0200] 일반거래	600001	AnyToSimul일반	N
+AP05	END문자방식업무	0200	[0200] 일반거래	500001	SimulToAny일반	N
+AP05	END문자방식업무	0200	[0200] 일반거래	600001	AnyToSimul일반	N
+AP06	고정길이방식업무	0200	[0200] 일반거래	500001	SimulToAny일반	N
+AP06	고정길이방식업무	0200	[0200] 일반거래	600001	AnyToSimul일반	N
+AP07	통신헤더방식길이HEX업무	0200	[0200] 일반거래	500001	SimulToAny일반	N
+AP07	통신헤더방식길이HEX업무	0200	[0200] 일반거래	600001	AnyToSimul일반	N
+AP08	공통헤더 길이필드 포함한 공유업무A	0200	[0200] 일반거래	500001	SimulToAny일반	N
+AP08	공통헤더 길이필드 포함한 공유업무A	0200	[0200] 일반거래	600001	AnyToSimul일반	N
+AP09	공통헤더 길이필드 포함한 공유업무B	0200	[0200] 일반거래	500001	SimulToAny일반	N
+AP09	공통헤더 길이필드 포함한 공유업무B	0200	[0200] 일반거래	600001	AnyToSimul일반	N
+AP10	공통헤더 길이필드 포함한 종별거래offset 증감	0200	[0200] 일반거래	500001	SimulToAny일반	N
+AP10	공통헤더 길이필드 포함한 종별거래offset 증감	0200	[0200] 일반거래	600001	AnyToSimul일반	N
+AP11	응답업는 거래A	0200	[0200] 일반거래	500001	SimulToAny일반	N
+AP11	응답업는 거래A	0200	[0200] 일반거래	600001	AnyToSimul일반	N
+AP12	응답업는 거래B	0200	[0200] 일반거래	500001	SimulToAny일반	N
+AP12	응답업는 거래B	0200	[0200] 일반거래	600001	AnyToSimul일반	N
+AP13	통신헤더 사용자헤더 제외업무	0200	[0200] 일반거래	500001	SimulToAny일반	N
+AP13	통신헤더 사용자헤더 제외업무	0200	[0200] 일반거래	600001	AnyToSimul일반	N
+AP14	공통헤더 사용자헤더 제외업무	0200	[0200] 일반거래	500001	SimulToAny일반	N
+AP14	공통헤더 사용자헤더 제외업무	0200	[0200] 일반거래	600001	AnyToSimul일반	N
+AP15	공통헤더 길이정보 변경업무	0200	[0200] 일반거래	500001	SimulToAny일반	N
+AP15	공통헤더 길이정보 변경업무	0200	[0200] 일반거래	600001	AnyToSimul일반	N
+AP16	통신헤더 길이정보 변경업무	0200	[0200] 일반거래	500001	SimulToAny일반	N
+AP16	통신헤더 길이정보 변경업무	0200	[0200] 일반거래	600001	AnyToSimul일반	N
+C003	기업은행방카순전송	0200	업무전문	CO0041	계좌정보조회	N
+C005	외환은행방카순전송	0200	업무전문	CO0041	계좌정보조회	N
+C020	우리은행방카순전송	0200	업무전문	055100	계좌정보조회	N
+D020	우리은행방카역전송	0200	업무전문	055100	계좌정보조회	N
+
+(D) [23:00:10][ThreadManagerMainSub.java:200] Thread End 
+(D) [23:00:10][ThreadManagerMainSub.java:75] datalen : 00000006
+(D) [23:00:10][ThreadManagerMainSub.java:93] datacmd : READ_INOUTTXURL                 
+(D) [23:00:10][ThreadManagerMainSub.java:108] databuf : NODATA
+(D) [23:00:10][ThreadManagerMainSub.java:187] Response : 
+000002401	C003	기업은행방카순전송	0200	업무전문	CO0041	계좌정보조회
+1	C020	우리은행방카순전송	0200	업무전문	055100	계좌정보조회
+2	C003	기업은행방카순전송	0200	업무전문	CO0041	계좌정보조회
+2	C020	우리은행방카순전송	0200	업무전문	055100	계좌정보조회
+
+(D) [23:00:10][ThreadManagerMainSub.java:200] Thread End 
+(D) [23:00:16][ThreadManagerMainSub.java:75] datalen : 00000009
+(D) [23:00:16][ThreadManagerMainSub.java:93] datacmd : READ_TCPMSGREQ_COMMHEAD         
+(D) [23:00:16][ThreadManagerMainSub.java:108] databuf : AP01	READ
+(D) [23:00:16][ThreadManagerMainSub.java:187] Response : 
+00000008NOTEXIST
+(D) [23:00:16][ThreadManagerMainSub.java:200] Thread End 
+(D) [23:00:16][ThreadManagerMainSub.java:75] datalen : 00000028
+(D) [23:00:16][ThreadManagerMainSub.java:93] datacmd : READ_TCPMSGREQ                  
+(D) [23:00:16][ThreadManagerMainSub.java:108] databuf : user01	AP01	0200	500001	READ
+(E) [23:00:16][ThreadManagerMainSub.java:2200] Error:HostName을 확인하세요. 라이센스[ Hostname[]
+(D) [23:07:34][ThreadManagerMainSub.java:75] datalen : 00000009
+(D) [23:07:34][ThreadManagerMainSub.java:93] datacmd : READ_TCPMSGREQ_COMMHEAD         
+(D) [23:07:34][ThreadManagerMainSub.java:108] databuf : AP01	READ
+(D) [23:07:34][ThreadManagerMainSub.java:187] Response : 
+00000008NOTEXIST
+(D) [23:07:34][ThreadManagerMainSub.java:200] Thread End 
+(D) [23:07:34][ThreadManagerMainSub.java:75] datalen : 00000028
+(D) [23:07:34][ThreadManagerMainSub.java:93] datacmd : READ_TCPMSGREQ                  
+(D) [23:07:34][ThreadManagerMainSub.java:108] databuf : user01	AP01	0200	500001	READ
+(E) [23:07:34][ThreadManagerMainSub.java:2200] Error:HostName을 확인하세요. 라이센스[ Hostname[]
+(D) [23:11:11][ThreadManagerMainSub.java:75] datalen : 00000011
+(D) [23:11:11][ThreadManagerMainSub.java:93] datacmd : CHECK_USERID                    
+(D) [23:11:11][ThreadManagerMainSub.java:108] databuf : user01	1234
+(D) [23:11:27][ThreadManagerMainSub.java:187] Response : 
+000000021
+
+(D) [23:11:40][ThreadManagerMainSub.java:75] datalen : 00000011
+(D) [23:11:40][ThreadManagerMainSub.java:93] datacmd : CHECK_USERID                    
+(D) [23:11:40][ThreadManagerMainSub.java:108] databuf : user01	1234
+(D) [23:11:40][ThreadManagerMainSub.java:187] Response : 
+000000021
+
+(D) [23:11:40][ThreadManagerMainSub.java:200] Thread End 
+(D) [23:11:40][ThreadManagerMainSub.java:75] datalen : 00000006
+(D) [23:11:40][ThreadManagerMainSub.java:93] datacmd : READ_USER                       
+(D) [23:11:40][ThreadManagerMainSub.java:108] databuf : user01
+(D) [23:11:40][ThreadManagerMainSub.java:187] Response : 
+00000033user01	1234	김학명	없음	전체권한
+
+(D) [23:11:40][ThreadManagerMainSub.java:200] Thread End 
+(D) [23:11:40][ThreadManagerMainSub.java:75] datalen : 00000006
+(D) [23:11:40][ThreadManagerMainSub.java:93] datacmd : READ_PERMIT                     
+(D) [23:11:40][ThreadManagerMainSub.java:108] databuf : user01
+(D) [23:11:40][ThreadManagerMainSub.java:187] Response : 
+00003564AP01	통신헤더방식업무	0200	[0200] 일반거래	100005	SimulToAnyBodyByPass매핑	N
+AP01	통신헤더방식업무	0200	[0200] 일반거래	200005	AnyToSimulBodyByPass매핑	N
+AP01	통신헤더방식업무	0200	[0200] 일반거래	500001	SimulToAny일반	N
+AP01	통신헤더방식업무	0200	[0200] 일반거래	500002	SimulToAny배열1차	N
+AP01	통신헤더방식업무	0200	[0200] 일반거래	500003	SimulToAny배열2차	N
+AP01	통신헤더방식업무	0200	[0200] 일반거래	500004	SimulToAny배열3차	N
+AP01	통신헤더방식업무	0200	[0200] 일반거래	500006	SimulToAny사용자정의매핑	N
+AP01	통신헤더방식업무	0200	[0200] 일반거래	500007	SimulToAny비정형데이타매핑	N
+AP01	통신헤더방식업무	0200	[0200] 일반거래	600001	AnyToSimul일반	N
+AP01	통신헤더방식업무	0200	[0200] 일반거래	600002	AnyToSimul배열1차	N
+AP01	통신헤더방식업무	0200	[0200] 일반거래	600003	AnyToSimul배열2차	N
+AP01	통신헤더방식업무	0200	[0200] 일반거래	600004	AnyToSimul배열3차	N
+AP01	통신헤더방식업무	0200	[0200] 일반거래	600006	AnyToSimul사용자정의매핑	N
+AP01	통신헤더방식업무	0200	[0200] 일반거래	600007	AnyToSimul비정형데이타매핑	N
+AP02	공통헤더 길이필드 제외한 업무	0200	[0200] 일반거래	500001	SimulToAny일반	N
+AP02	공통헤더 길이필드 제외한 업무	0200	[0200] 일반거래	600001	AnyToSimul일반	N
+AP03	공통헤더 길이필드 포함한 업무	0200	[0200] 일반거래	500001	SimulToAny일반	N
+AP03	공통헤더 길이필드 포함한 업무	0200	[0200] 일반거래	600001	AnyToSimul일반	N
+AP04	공통헤더 BODY부 길이인 업무	0200	[0200] 일반거래	500001	SimulToAny일반	N
+AP04	공통헤더 BODY부 길이인 업무	0200	[0200] 일반거래	600001	AnyToSimul일반	N
+AP05	END문자방식업무	0200	[0200] 일반거래	500001	SimulToAny일반	N
+AP05	END문자방식업무	0200	[0200] 일반거래	600001	AnyToSimul일반	N
+AP06	고정길이방식업무	0200	[0200] 일반거래	500001	SimulToAny일반	N
+AP06	고정길이방식업무	0200	[0200] 일반거래	600001	AnyToSimul일반	N
+AP07	통신헤더방식길이HEX업무	0200	[0200] 일반거래	500001	SimulToAny일반	N
+AP07	통신헤더방식길이HEX업무	0200	[0200] 일반거래	600001	AnyToSimul일반	N
+AP08	공통헤더 길이필드 포함한 공유업무A	0200	[0200] 일반거래	500001	SimulToAny일반	N
+AP08	공통헤더 길이필드 포함한 공유업무A	0200	[0200] 일반거래	600001	AnyToSimul일반	N
+AP09	공통헤더 길이필드 포함한 공유업무B	0200	[0200] 일반거래	500001	SimulToAny일반	N
+AP09	공통헤더 길이필드 포함한 공유업무B	0200	[0200] 일반거래	600001	AnyToSimul일반	N
+AP10	공통헤더 길이필드 포함한 종별거래offset 증감	0200	[0200] 일반거래	500001	SimulToAny일반	N
+AP10	공통헤더 길이필드 포함한 종별거래offset 증감	0200	[0200] 일반거래	600001	AnyToSimul일반	N
+AP11	응답업는 거래A	0200	[0200] 일반거래	500001	SimulToAny일반	N
+AP11	응답업는 거래A	0200	[0200] 일반거래	600001	AnyToSimul일반	N
+AP12	응답업는 거래B	0200	[0200] 일반거래	500001	SimulToAny일반	N
+AP12	응답업는 거래B	0200	[0200] 일반거래	600001	AnyToSimul일반	N
+AP13	통신헤더 사용자헤더 제외업무	0200	[0200] 일반거래	500001	SimulToAny일반	N
+AP13	통신헤더 사용자헤더 제외업무	0200	[0200] 일반거래	600001	AnyToSimul일반	N
+AP14	공통헤더 사용자헤더 제외업무	0200	[0200] 일반거래	500001	SimulToAny일반	N
+AP14	공통헤더 사용자헤더 제외업무	0200	[0200] 일반거래	600001	AnyToSimul일반	N
+AP15	공통헤더 길이정보 변경업무	0200	[0200] 일반거래	500001	SimulToAny일반	N
+AP15	공통헤더 길이정보 변경업무	0200	[0200] 일반거래	600001	AnyToSimul일반	N
+AP16	통신헤더 길이정보 변경업무	0200	[0200] 일반거래	500001	SimulToAny일반	N
+AP16	통신헤더 길이정보 변경업무	0200	[0200] 일반거래	600001	AnyToSimul일반	N
+C003	기업은행방카순전송	0200	업무전문	CO0041	계좌정보조회	N
+C005	외환은행방카순전송	0200	업무전문	CO0041	계좌정보조회	N
+C020	우리은행방카순전송	0200	업무전문	055100	계좌정보조회	N
+D020	우리은행방카역전송	0200	업무전문	055100	계좌정보조회	N
+
+(D) [23:11:40][ThreadManagerMainSub.java:200] Thread End 
+(D) [23:11:40][ThreadManagerMainSub.java:75] datalen : 00000006
+(D) [23:11:40][ThreadManagerMainSub.java:93] datacmd : READ_INOUTTXTCP                 
+(D) [23:11:40][ThreadManagerMainSub.java:108] databuf : NODATA
+(D) [23:11:40][ThreadManagerMainSub.java:187] Response : 
+00003324I	AP01	통신헤더방식업무	0200	[0200] 일반거래	100005	SimulToAnyBodyByPass매핑
+I	AP01	통신헤더방식업무	0200	[0200] 일반거래	500001	SimulToAny일반
+I	AP01	통신헤더방식업무	0200	[0200] 일반거래	500002	SimulToAny배열1차
+I	AP01	통신헤더방식업무	0200	[0200] 일반거래	500003	SimulToAny배열2차
+I	AP01	통신헤더방식업무	0200	[0200] 일반거래	500004	SimulToAny배열3차
+I	AP01	통신헤더방식업무	0200	[0200] 일반거래	500006	SimulToAny사용자정의매핑
+I	AP01	통신헤더방식업무	0200	[0200] 일반거래	500007	SimulToAny비정형데이타매핑
+I	AP02	공통헤더 길이필드 제외한 업무	0200	[0200] 일반거래	500001	SimulToAny일반
+I	AP03	공통헤더 길이필드 포함한 업무	0200	[0200] 일반거래	500001	SimulToAny일반
+I	AP04	공통헤더 BODY부 길이인 업무	0200	[0200] 일반거래	500001	SimulToAny일반
+I	AP05	END문자방식업무	0200	[0200] 일반거래	500001	SimulToAny일반
+I	AP06	고정길이방식업무	0200	[0200] 일반거래	500001	SimulToAny일반
+I	AP07	통신헤더방식길이HEX업무	0200	[0200] 일반거래	500001	SimulToAny일반
+I	AP08	공통헤더 길이필드 포함한 공유업무A	0200	[0200] 일반거래	500001	SimulToAny일반
+I	AP09	공통헤더 길이필드 포함한 공유업무B	0200	[0200] 일반거래	500001	SimulToAny일반
+I	AP10	공통헤더 길이필드 포함한 종별거래offset 증감	0200	[0200] 일반거래	500001	SimulToAny일반
+I	AP11	응답업는 거래A	0200	[0200] 일반거래	500001	SimulToAny일반
+I	AP12	응답업는 거래B	0200	[0200] 일반거래	500001	SimulToAny일반
+I	AP13	통신헤더 사용자헤더 제외업무	0200	[0200] 일반거래	500001	SimulToAny일반
+I	AP14	공통헤더 사용자헤더 제외업무	0200	[0200] 일반거래	500001	SimulToAny일반
+I	AP15	공통헤더 길이정보 변경업무	0200	[0200] 일반거래	500001	SimulToAny일반
+I	AP16	통신헤더 길이정보 변경업무	0200	[0200] 일반거래	500001	SimulToAny일반
+O	AP01	통신헤더방식업무	0200	[0200] 일반거래	200005	AnyToSimulBodyByPass매핑
+O	AP01	통신헤더방식업무	0200	[0200] 일반거래	600001	AnyToSimul일반
+O	AP01	통신헤더방식업무	0200	[0200] 일반거래	600002	AnyToSimul배열1차
+O	AP01	통신헤더방식업무	0200	[0200] 일반거래	600003	AnyToSimul배열2차
+O	AP01	통신헤더방식업무	0200	[0200] 일반거래	600004	AnyToSimul배열3차
+O	AP01	통신헤더방식업무	0200	[0200] 일반거래	600006	AnyToSimul사용자정의매핑
+O	AP01	통신헤더방식업무	0200	[0200] 일반거래	600007	AnyToSimul비정형데이타매핑
+O	AP02	공통헤더 길이필드 제외한 업무	0200	[0200] 일반거래	600001	AnyToSimul일반
+O	AP03	공통헤더 길이필드 포함한 업무	0200	[0200] 일반거래	600001	AnyToSimul일반
+O	AP04	공통헤더 BODY부 길이인 업무	0200	[0200] 일반거래	600001	AnyToSimul일반
+O	AP05	END문자방식업무	0200	[0200] 일반거래	600001	AnyToSimul일반
+O	AP06	고정길이방식업무	0200	[0200] 일반거래	600001	AnyToSimul일반
+O	AP07	통신헤더방식길이HEX업무	0200	[0200] 일반거래	600001	AnyToSimul일반
+O	AP08	공통헤더 길이필드 포함한 공유업무A	0200	[0200] 일반거래	600001	AnyToSimul일반
+O	AP09	공통헤더 길이필드 포함한 공유업무B	0200	[0200] 일반거래	600001	AnyToSimul일반
+O	AP10	공통헤더 길이필드 포함한 종별거래offset 증감	0200	[0200] 일반거래	600001	AnyToSimul일반
+O	AP11	응답업는 거래A	0200	[0200] 일반거래	600001	AnyToSimul일반
+O	AP12	응답업는 거래B	0200	[0200] 일반거래	600001	AnyToSimul일반
+O	AP13	통신헤더 사용자헤더 제외업무	0200	[0200] 일반거래	600001	AnyToSimul일반
+O	AP14	공통헤더 사용자헤더 제외업무	0200	[0200] 일반거래	600001	AnyToSimul일반
+O	AP15	공통헤더 길이정보 변경업무	0200	[0200] 일반거래	600001	AnyToSimul일반
+O	AP16	통신헤더 길이정보 변경업무	0200	[0200] 일반거래	600001	AnyToSimul일반
+
+(D) [23:11:40][ThreadManagerMainSub.java:200] Thread End 
+(D) [23:11:40][ThreadManagerMainSub.java:75] datalen : 00000006
+(D) [23:11:40][ThreadManagerMainSub.java:93] datacmd : READ_PERMIT                     
+(D) [23:11:40][ThreadManagerMainSub.java:108] databuf : user01
+(D) [23:11:40][ThreadManagerMainSub.java:187] Response : 
+00003564AP01	통신헤더방식업무	0200	[0200] 일반거래	100005	SimulToAnyBodyByPass매핑	N
+AP01	통신헤더방식업무	0200	[0200] 일반거래	200005	AnyToSimulBodyByPass매핑	N
+AP01	통신헤더방식업무	0200	[0200] 일반거래	500001	SimulToAny일반	N
+AP01	통신헤더방식업무	0200	[0200] 일반거래	500002	SimulToAny배열1차	N
+AP01	통신헤더방식업무	0200	[0200] 일반거래	500003	SimulToAny배열2차	N
+AP01	통신헤더방식업무	0200	[0200] 일반거래	500004	SimulToAny배열3차	N
+AP01	통신헤더방식업무	0200	[0200] 일반거래	500006	SimulToAny사용자정의매핑	N
+AP01	통신헤더방식업무	0200	[0200] 일반거래	500007	SimulToAny비정형데이타매핑	N
+AP01	통신헤더방식업무	0200	[0200] 일반거래	600001	AnyToSimul일반	N
+AP01	통신헤더방식업무	0200	[0200] 일반거래	600002	AnyToSimul배열1차	N
+AP01	통신헤더방식업무	0200	[0200] 일반거래	600003	AnyToSimul배열2차	N
+AP01	통신헤더방식업무	0200	[0200] 일반거래	600004	AnyToSimul배열3차	N
+AP01	통신헤더방식업무	0200	[0200] 일반거래	600006	AnyToSimul사용자정의매핑	N
+AP01	통신헤더방식업무	0200	[0200] 일반거래	600007	AnyToSimul비정형데이타매핑	N
+AP02	공통헤더 길이필드 제외한 업무	0200	[0200] 일반거래	500001	SimulToAny일반	N
+AP02	공통헤더 길이필드 제외한 업무	0200	[0200] 일반거래	600001	AnyToSimul일반	N
+AP03	공통헤더 길이필드 포함한 업무	0200	[0200] 일반거래	500001	SimulToAny일반	N
+AP03	공통헤더 길이필드 포함한 업무	0200	[0200] 일반거래	600001	AnyToSimul일반	N
+AP04	공통헤더 BODY부 길이인 업무	0200	[0200] 일반거래	500001	SimulToAny일반	N
+AP04	공통헤더 BODY부 길이인 업무	0200	[0200] 일반거래	600001	AnyToSimul일반	N
+AP05	END문자방식업무	0200	[0200] 일반거래	500001	SimulToAny일반	N
+AP05	END문자방식업무	0200	[0200] 일반거래	600001	AnyToSimul일반	N
+AP06	고정길이방식업무	0200	[0200] 일반거래	500001	SimulToAny일반	N
+AP06	고정길이방식업무	0200	[0200] 일반거래	600001	AnyToSimul일반	N
+AP07	통신헤더방식길이HEX업무	0200	[0200] 일반거래	500001	SimulToAny일반	N
+AP07	통신헤더방식길이HEX업무	0200	[0200] 일반거래	600001	AnyToSimul일반	N
+AP08	공통헤더 길이필드 포함한 공유업무A	0200	[0200] 일반거래	500001	SimulToAny일반	N
+AP08	공통헤더 길이필드 포함한 공유업무A	0200	[0200] 일반거래	600001	AnyToSimul일반	N
+AP09	공통헤더 길이필드 포함한 공유업무B	0200	[0200] 일반거래	500001	SimulToAny일반	N
+AP09	공통헤더 길이필드 포함한 공유업무B	0200	[0200] 일반거래	600001	AnyToSimul일반	N
+AP10	공통헤더 길이필드 포함한 종별거래offset 증감	0200	[0200] 일반거래	500001	SimulToAny일반	N
+AP10	공통헤더 길이필드 포함한 종별거래offset 증감	0200	[0200] 일반거래	600001	AnyToSimul일반	N
+AP11	응답업는 거래A	0200	[0200] 일반거래	500001	SimulToAny일반	N
+AP11	응답업는 거래A	0200	[0200] 일반거래	600001	AnyToSimul일반	N
+AP12	응답업는 거래B	0200	[0200] 일반거래	500001	SimulToAny일반	N
+AP12	응답업는 거래B	0200	[0200] 일반거래	600001	AnyToSimul일반	N
+AP13	통신헤더 사용자헤더 제외업무	0200	[0200] 일반거래	500001	SimulToAny일반	N
+AP13	통신헤더 사용자헤더 제외업무	0200	[0200] 일반거래	600001	AnyToSimul일반	N
+AP14	공통헤더 사용자헤더 제외업무	0200	[0200] 일반거래	500001	SimulToAny일반	N
+AP14	공통헤더 사용자헤더 제외업무	0200	[0200] 일반거래	600001	AnyToSimul일반	N
+AP15	공통헤더 길이정보 변경업무	0200	[0200] 일반거래	500001	SimulToAny일반	N
+AP15	공통헤더 길이정보 변경업무	0200	[0200] 일반거래	600001	AnyToSimul일반	N
+AP16	통신헤더 길이정보 변경업무	0200	[0200] 일반거래	500001	SimulToAny일반	N
+AP16	통신헤더 길이정보 변경업무	0200	[0200] 일반거래	600001	AnyToSimul일반	N
+C003	기업은행방카순전송	0200	업무전문	CO0041	계좌정보조회	N
+C005	외환은행방카순전송	0200	업무전문	CO0041	계좌정보조회	N
+C020	우리은행방카순전송	0200	업무전문	055100	계좌정보조회	N
+D020	우리은행방카역전송	0200	업무전문	055100	계좌정보조회	N
+
+(D) [23:11:40][ThreadManagerMainSub.java:200] Thread End 
+(D) [23:11:40][ThreadManagerMainSub.java:75] datalen : 00000006
+(D) [23:11:40][ThreadManagerMainSub.java:93] datacmd : READ_INOUTTXURL                 
+(D) [23:11:40][ThreadManagerMainSub.java:108] databuf : NODATA
+(D) [23:11:41][ThreadManagerMainSub.java:187] Response : 
+000002401	C003	기업은행방카순전송	0200	업무전문	CO0041	계좌정보조회
+1	C020	우리은행방카순전송	0200	업무전문	055100	계좌정보조회
+2	C003	기업은행방카순전송	0200	업무전문	CO0041	계좌정보조회
+2	C020	우리은행방카순전송	0200	업무전문	055100	계좌정보조회
+
+(D) [23:11:41][ThreadManagerMainSub.java:200] Thread End 
+(D) [23:11:46][ThreadManagerMainSub.java:75] datalen : 00000009
+(D) [23:11:46][ThreadManagerMainSub.java:93] datacmd : READ_TCPMSGREQ_COMMHEAD         
+(D) [23:11:46][ThreadManagerMainSub.java:108] databuf : AP01	READ
+(D) [23:11:46][ThreadManagerMainSub.java:187] Response : 
+00000008NOTEXIST
+(D) [23:11:46][ThreadManagerMainSub.java:200] Thread End 
+(D) [23:11:46][ThreadManagerMainSub.java:75] datalen : 00000028
+(D) [23:11:46][ThreadManagerMainSub.java:93] datacmd : READ_TCPMSGREQ                  
+(D) [23:11:46][ThreadManagerMainSub.java:108] databuf : user01	AP01	0200	500001	READ
+(E) [23:11:46][ThreadManagerMainSub.java:2183] Error:데모 라이센스가 만료되였습니다. 만기일:20141014
+(D) [23:14:23][ThreadManagerMainSub.java:75] datalen : 00000009
+(D) [23:14:23][ThreadManagerMainSub.java:93] datacmd : READ_TCPMSGREQ_COMMHEAD         
+(D) [23:14:23][ThreadManagerMainSub.java:108] databuf : AP01	READ
+(D) [23:14:23][ThreadManagerMainSub.java:187] Response : 
+00000008NOTEXIST
+(D) [23:14:23][ThreadManagerMainSub.java:200] Thread End 
+(D) [23:14:23][ThreadManagerMainSub.java:75] datalen : 00000028
+(D) [23:14:23][ThreadManagerMainSub.java:93] datacmd : READ_TCPMSGREQ                  
+(D) [23:14:23][ThreadManagerMainSub.java:108] databuf : user01	AP01	0200	500002	READ
+(E) [23:14:23][ThreadManagerMainSub.java:2194] Error:HostName을 확인하세요. 라이센스[127.0.0.1 Hostname[127.0.0.1]
+(D) [23:15:09][ThreadManagerMainSub.java:75] datalen : 00000009
+(D) [23:15:09][ThreadManagerMainSub.java:93] datacmd : READ_TCPMSGREQ_COMMHEAD         
+(D) [23:15:09][ThreadManagerMainSub.java:108] databuf : AP01	READ
+(D) [23:15:09][ThreadManagerMainSub.java:187] Response : 
+00000008NOTEXIST
+(D) [23:15:09][ThreadManagerMainSub.java:200] Thread End 
+(D) [23:15:09][ThreadManagerMainSub.java:75] datalen : 00000028
+(D) [23:15:09][ThreadManagerMainSub.java:93] datacmd : READ_TCPMSGREQ                  
+(D) [23:15:09][ThreadManagerMainSub.java:108] databuf : user01	AP01	0200	500001	READ
+(E) [23:16:00][ThreadManagerMainSub.java:2194] Error:HostName을 확인하세요. 라이센스[127.0.0.1 Hostname[127.0.0.1]
+(D) [23:20:24][ThreadManagerMainSub.java:75] datalen : 00000009
+(D) [23:20:24][ThreadManagerMainSub.java:93] datacmd : READ_TCPMSGREQ_COMMHEAD         
+(D) [23:20:24][ThreadManagerMainSub.java:108] databuf : AP01	READ
+(D) [23:20:30][ThreadManagerMainSub.java:75] datalen : 00000028
+(D) [23:20:30][ThreadManagerMainSub.java:93] datacmd : READ_TCPMSGREQ                  
+(D) [23:20:30][ThreadManagerMainSub.java:108] databuf : user01	AP01	0200	500002	READ
+(D) [23:20:31][ThreadManagerMainSub.java:187] Response : 
+00000008NOTEXIST
+(D) [23:21:59][ThreadManagerMainSub.java:75] datalen : 00000016
+(D) [23:21:59][ThreadManagerMainSub.java:93] datacmd : READ_RESLINKONE                 
+(D) [23:21:59][ThreadManagerMainSub.java:108] databuf : AP01	0200	500002
+(D) [23:21:59][ThreadManagerMainSub.java:187] Response : 
+00000009NOT-FOUND
+(D) [23:21:59][ThreadManagerMainSub.java:200] Thread End 
+(D) [23:21:59][ThreadManagerMainSub.java:75] datalen : 00000028
+(D) [23:21:59][ThreadManagerMainSub.java:93] datacmd : READ_TCPMSGRES                  
+(D) [23:21:59][ThreadManagerMainSub.java:108] databuf : user01	AP01	0200	500002	READ
+(D) [23:22:29][ThreadManagerMainSub.java:187] Response : 
+00000453전문종별	kind_code	CHAR	4	<NODATA>
+거래코드	tx_code	CHAR	6	<NODATA>
+송수신Flag	sr_flag	CHAR	1	<NODATA>
+전송일자	senddata	CHAR	8	<NODATA>
+전송시간	sendtime	CHAR	6	<NODATA>
+비고	remark	CHAR	21	<NODATA>
+정렬시작	ARY_STRT_02	ARRAY-S	2	<NODATA>
+구조시작	ARY_STRT_02*	STRUCT-S	0	<NODATA>
+기관코드	ARY_STRT_02*.BUR_C	CHAR	4	<NODATA>
+기관명	ARY_STRT_02*.RPOT_DV	CHAR	10	<NODATA>
+구조종료	ARY_STRT_02*	STRUCT-E	0	<NODATA>
+정렬종료	ARY_STRT_02	ARRAY-E	0	<NODATA>
+

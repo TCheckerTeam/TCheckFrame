@@ -1,0 +1,4 @@
+USERID	PASSWORD	INFO	IP	PERMIT	
+C	C	C	C	C	
+Administrator	1234	관리자	121.126.79.5:60001:60002	전체권한	
+user01	1234	김학명	없음	전체권한	

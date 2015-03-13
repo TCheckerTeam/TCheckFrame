@@ -1,0 +1,1 @@
+INSERT INTO ALNODE(NODENAME,STA_TYPE,IPADDR,PORTNO,SHMKEY,RETRY_TIME,CLASS_PATH,INCLUDE_PATH,LOG_PATH,LIB_PATH) VALUES ('iristech',1,'121.126.79.30',8898,78888,10,'/home/anylink/anycom/classpath','/home/anylink/anycom/inc','/home/anylink/tmax/log/alog','/home/anylink/anycom/lib');

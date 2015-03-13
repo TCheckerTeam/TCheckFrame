@@ -1,0 +1,3 @@
+#cpaid,frompartid,topartid,servicename,fromrole, torole,requestformat,responseformat
+C003=banca.003.L01.test,003,L01,urn:bancassurance,http://www.ibk.co.kr/bancassurance#Bank,http://www.ibk.co.kr/bancassurance#INSR,@_Request,@_Response
+D003=banca.L01.003.test,L01,003,urn:bancassurance,http://www.ibk.co.kr/bancassurance#INSR,http://www.ibk.co.kr/bancassurance#Bank,@_Request,@_Response

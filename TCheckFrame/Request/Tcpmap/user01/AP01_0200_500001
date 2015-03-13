@@ -1,0 +1,10 @@
+전문종별	kind_code	CHAR	4	<NODATA>
+거래코드	tx_code	CHAR	6	<NODATA>
+송수신Flag	sr_flag	CHAR	1	<NODATA>
+전송일자	senddata	CHAR	8	<NODATA>
+전송시간	sendtime	CHAR	6	<NODATA>
+비고	remark	CHAR	21	<NODATA>
+주민(사업자)등록번호	REG_NUMBER	CHAR	13	<NODATA>
+주민(사업자)등록번호 구분	REG_GUBUN	CHAR	1	<NODATA>
+성명(대표자)	OWN_NAME	CHAR	20	<NODATA>
+세금우대 총 한도 금액	TAX_MAX	CHAR	10	<NODATA>

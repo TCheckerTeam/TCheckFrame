@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="lib" path="C:/zDrive/TCheckFrameServer/UserLib/ojdbc6.jar"/>
+	<classpathentry kind="lib" path="C:/zDrive/TCheckFrameServer/UserLib/swingx-1.6.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="C:/zDrive/TCheckFrameServer/UserLib/al4-core.jar"/>
+	<classpathentry kind="lib" path="C:/zDrive/TCheckFrameServer/UserLib/jeus.jar"/>
+	<classpathentry kind="lib" path="C:/zDrive/TCheckFrameServer/UserLib/jeusutil.jar"/>
+	<classpathentry kind="lib" path="C:/zDrive/TCheckFrameServer/UserLib/log4j.jar"/>
+	<classpathentry kind="lib" path="C:/zDrive/TCheckFrameServer/UserLib/webt50.jar"/>
+	<classpathentry kind="lib" path="C:/zDrive/TCheckFrameServer/UserLib/db2jcc.jar"/>
+	<classpathentry kind="lib" path="C:/zDrive/TCheckFrameServer/UserLib/db2jcc4.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

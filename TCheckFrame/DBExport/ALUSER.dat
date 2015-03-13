@@ -1,0 +1,6 @@
+USER_ID	STA_TYPE	USER_ROLE	PASSWD	USER_NAME	EMAIL	CREATED_DATE	PHONE	
+C	N	N	C	C	C	C	C	
+root	1	2	dXNlcl9yb290	Admin Root	<NODATA>	<NODATA>	<NODATA>	
+sysmgr	1	3	user_sysmgr	Admin SysMgr	<NODATA>	<NODATA>	<NODATA>	
+guest	1	4	user_guest	Guest	<NODATA>	<NODATA>	<NODATA>	
+anylink	1	1	YW55bGluaw==	<NODATA>	<NODATA>	<NODATA>	<NODATA>	

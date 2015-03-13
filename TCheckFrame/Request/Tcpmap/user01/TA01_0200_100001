@@ -1,0 +1,14 @@
+전문종별	<NODATA>	CHAR	4	0200
+거래코드	<NODATA>	CHAR	6	100001
+송수신Flag	<NODATA>	CHAR	1	S
+전송일자	<NODATA>	CHAR	8	20140710
+전송시간	<NODATA>	CHAR	6	142901
+비고	<NODATA>	CHAR	21	bbbb
+(RI)주민(사업자)등록번호	<NODATA>	CHAR	13	<NODATA>
+(RI)주민(사업자)등록번호 구분	<NODATA>	CHAR	1	<NODATA>
+(RI)상호(기업체명)	<NODATA>	CHAR	40	<NODATA>
+(RI)성명(대표자)	<NODATA>	CHAR	20	<NODATA>
+(RI)정보주체(구 장애인) 구분	<NODATA>	CHAR	1	<NODATA>
+(RI)세금우대 중복 여부	<NODATA>	CHAR	1	<NODATA>
+(RI)세금우대 총 한도 금액	<NODATA>	CHAR	10	<NODATA>
+(RI)세금우대 미사용 한도 금액	<NODATA>	CHAR	10	workending

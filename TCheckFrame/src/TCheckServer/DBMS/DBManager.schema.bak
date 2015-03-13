@@ -1,0 +1,81 @@
+/* 회선에 대한 설정 정보 */
+CREATE TABLE TCHECKER_LINEINFO (
+             APPL_CODE        VARCHAR2(4)   NOT NULL,     --업무코드
+             LU_NAME          NUMBER(5)     NOT NULL,     --PortNo
+             CONNECT_TYPE     NUMBER(2)     NOT NULL,     --Connect Type
+             STA_TYPE         NUMBER(1)     NOT NULL,     --1:사용, 2:미사용
+             COMM_HEAD_TYPE   NUMBER(1)     NOT NULL,     --Header Type
+             COMM_HEAD_SIZE   NUMBER(4)     NOT NULL,     --Header Size
+             LEN_TYPE         NUMBER(4)     NOT NULL,     --통신길이 Type
+             LEN_OFFST        NUMBER(4)     NOT NULL,     --통신길이 Offset
+             LEN_SIZE         NUMBER(4)     NOT NULL,     --통신길이 Size
+             KIND_OFFSET      NUMBER(4)     NOT NULL,     --통신종별 Offset
+             KIND_LEN         NUMBER(4)     NOT NULL,     --통신종별 Size
+             TX_OFFSET        NUMBER(4)     NOT NULL,     --통신거래 Offset
+             TX_LEN           NUMBER(4)     NOT NULL,     --통신거래 Size  
+             KINDTX_GAGAM     NUMBER(4)     NOT NULL      --종별/거래의 Offset add/plus
+);
+//alter table tchecker_lineinfo add KINDTX_GAGAM     NUMBER(4);
+
+ALTER TABLE TCHECKER_LINEINFO
+       ADD  ( PRIMARY KEY (APPL_CODE, LU_NAME, CONNECT_TYPE) ) ;
+
+/* 거래정보에 대한 설정 정보 */
+CREATE TABLE TCHECKER_TXDETAIL (
+             APPL_CODE        VARCHAR2(4)   NOT NULL,     --업무코드
+             KIND_CODE        VARCHAR2(10)  NOT NULL,     --거래코드
+             TX_CODE          VARCHAR2(10)  NOT NULL,     --거래코드
+             INOUT_FLAG       VARCHAR2(1)   NOT NULL,     --I:Simulator에서 요청거래, O:Anylink에서 요청거래, B:양방향 요청거래, U:모듈에서 판단하는 거래, N:점검필요
+             MAP_FLAG         VARCHAR2(1)   NOT NULL      --B:일반매핑,U:사용자매핑,P:Body부 ByPass매핑, N:비정형매핑
+);
+ 
+ALTER TABLE TCHECKER_TXDETAIL
+       ADD  ( PRIMARY KEY (APPL_CODE, KIND_CODE, TX_CODE) ) ;
+       
+     
+/* 응답거래 Link 정보에 대한 설정 정보 */
+CREATE TABLE TCHECKER_RESLINK (
+             REQ_APPL_CODE        VARCHAR2(4)   NOT NULL,     --요청업무코드
+             REQ_KIND_CODE        VARCHAR2(10)  NOT NULL,     --요청종별코드
+             REQ_TX_CODE          VARCHAR2(10)  NOT NULL,     --요청거래코드
+             RES_APPL_CODE        VARCHAR2(4)   NOT NULL,     --응답업무코드
+             RES_KIND_CODE        VARCHAR2(10)  NOT NULL,     --응답종별코드
+             RES_TX_CODE          VARCHAR2(10)  NOT NULL,     --응답거래코드
+             RES_PORTNO           VARCHAR2(5)   NOT NULL      --응답포트번호
+);
+ 
+ALTER TABLE TCHECKER_RESLINK
+       ADD  ( PRIMARY KEY (REQ_APPL_CODE,REQ_KIND_CODE,REQ_TX_CODE) ) ;
+              
+/* 사용자 정보에 대한 설정 정보 */
+CREATE TABLE TCHECKER_USER (
+             USERID            VARCHAR2(20)   NOT NULL,     --사용자ID
+             PASSWORD          VARCHAR2(20)   NOT NULL,     --비밀번호
+             INFO              VARCHAR2(100)  NOT NULL,     --사용자정보
+             IP                VARCHAR2(40)   NOT NULL,     --PC IPAddress
+             PERMIT            VARCHAR2(10)   NOT NULL      --권한등급
+);
+ 
+ALTER TABLE TCHECKER_USER
+       ADD  ( PRIMARY KEY (USERID) ) ;
+            
+/* 사용자별 권한 정보에 대한 설정 정보 */
+CREATE TABLE TCHECKER_PERMIT (
+             USERID           VARCHAR2(20)  NOT NULL,     --사용자ID
+             APPL_CODE        VARCHAR2(4)   NOT NULL,     --요청업무코드
+             KIND_CODE        VARCHAR2(10)  NOT NULL,     --요청종별코드
+             TX_CODE          VARCHAR2(10)  NOT NULL,     --요청거래코드
+             PERMIT           VARCHAR2(1)   NOT NULL      --허용여부(Y/N)
+);
+ 
+ALTER TABLE TCHECKER_PERMIT
+       ADD  ( PRIMARY KEY (USERID,APPL_CODE,KIND_CODE,TX_CODE) ) ;     
+       
+insert into TCHECKER_USER values('Administrator','1234','관리자','127.0.0.1:60001:60002','전체권한');
+                            
+       @ALAPPL.dat
+@ALGW.dat
+@ALGWSUB.dat
+@ALLINE.dat
+@ALLINESUB.dat
+@ALURL.dat

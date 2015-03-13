@@ -1,0 +1,16 @@
+(I) [10:15:11][DBManager.java:57] dbms_driver     = oracle.jdbc.driver.OracleDriver
+(I) [10:15:11][DBManager.java:58] dbms_connection = jdbc:oracle:thin:@121.126.79.29:1521:ORCL
+(I) [10:15:13][DBManager.java:70] dbms is Connectioned
+(D) [10:15:13][DBManager.java:133]  SELECT a.appl_code, a.url, a.URL_TYPE, g.EB_CPAID, g.EB_FROM_PARTY, g.EB_TO_PARTY, g.EB_SVCNAME, g.REQ_ENCODING, g.RES_ENCODING
+ FROM alurl a, algrp g 
+ Where a.sta_type = 1  
+   and g.sta_type = 1  
+   and a.appl_code (+)= g.appl_code
+(I) [10:16:16][DBManager.java:57] dbms_driver     = oracle.jdbc.driver.OracleDriver
+(I) [10:16:16][DBManager.java:58] dbms_connection = jdbc:oracle:thin:@121.126.79.29:1521:ORCL
+(I) [10:16:16][DBManager.java:70] dbms is Connectioned
+(D) [10:16:16][DBManager.java:133]  SELECT a.appl_code, a.url, a.URL_TYPE, g.EB_CPAID, g.EB_FROM_PARTY, g.EB_TO_PARTY, g.EB_SVCNAME, g.REQ_ENCODING, g.RES_ENCODING
+ FROM alurl a, algrp g 
+ Where a.sta_type = 1  
+   and g.sta_type = 1  
+   and a.appl_code (+)= g.appl_code
