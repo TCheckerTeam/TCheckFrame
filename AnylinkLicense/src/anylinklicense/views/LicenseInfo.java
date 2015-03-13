@@ -3,8 +3,8 @@ package anylinklicense.views;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 
-/* test */
-public class LicenseInfo {
+/* git test */
+public class LicenseInfo { 
 	private String ItemName;
 	private String ItemValue;
  
