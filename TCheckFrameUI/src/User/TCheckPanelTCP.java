@@ -1061,17 +1061,24 @@ public class TCheckPanelTCP {
                             String tmpSendPortOld = gSendPortNo;
 
         			    	combSendPort.removeAllItems();
-        			    	combSendPort.addItem("매퍼전송");
         			    	
-        			    	String lineinfo = GetTLineInfo();
-        			    	String[] arrlineinfo = lineinfo.split("\n");
-        			    	for(int i=0;i < arrlineinfo.length ;i++){
-        			    		String[] arrtmpsub = arrlineinfo[i].split("\t");
-        			    		if (gApplCode.equals(arrtmpsub[0]) && arrtmpsub[3].equals("1")) {
-        			    		    combSendPort.addItem(arrtmpsub[1]);
-        			    		}
+        			    	
+        			    	//Send Port 등록
+        			    	boolean ExistFG = false;
+        			    	String portlist = GetSendPort(gApplCode);
+        			    	String[] arrtportlist = portlist.split("\n");
+        			    	for(int i=0;i < arrtportlist.length ;i++){
+        			    		if (arrtportlist[i].trim().equals('"')) break;
+        			    		for(int k=0;k < combSendPort.getItemCount();k++){
+    			    				if (combSendPort.getItemAt(k).equals(arrtportlist[i])) continue;
+    			    			}
+    			    		    combSendPort.addItem(arrtportlist[i]);
+    			    		    if (tmpSendPortOld.equals(tmpSendPortOld)) ExistFG = true;
         			    	}
-        			    	combSendPort.setSelectedItem(tmpSendPortOld);
+        			     
+        			    	combSendPort.addItem("매퍼전송");
+        			    	if (ExistFG) combSendPort.setSelectedItem(tmpSendPortOld);
+        			    	else combSendPort.setSelectedItem("매퍼전송");
                     }
                 }
         );
@@ -1755,12 +1762,11 @@ public class TCheckPanelTCP {
    
         return idx;
     }
-    private String GetTLineInfo()
+    private String GetSendPort(String pApplCode)
     {
     	try {
-    		String RetData = Communication("READ_TLINEINFO", "NODATA");
+    		String RetData = Communication("READ_SENDPORT",  pApplCode);
         	if (RetData.trim().equals("") || RetData.trim().equals("NOT-FOUND")) {
-        		JOptionPane.showMessageDialog(null,"회선정보를 가져오지 못했습니다.");
         		return "";
         	}
         	return RetData;

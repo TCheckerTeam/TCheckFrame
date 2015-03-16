@@ -34,6 +34,7 @@ import org.jdesktop.swingx.JXTreeTable;
 import Manager.DataModel.myComboxModel;
 import Manager.DataModel.myTxDetailComm;
 import Manager.DataModel.myTxDetailModel;
+import User.DataModel.myTcpMapComm;
 
  
 public class TCheckPanelTxDetail { 
@@ -205,6 +206,15 @@ public class TCheckPanelTxDetail {
 				 String TxOffset   = "";
 				 String TxLen      = "";
 				 
+				 //Async 거래목록을 가져온다.
+				 String AsyncList = GetApplTxMappingListInfo();
+				 String[] arrAsyncList = AsyncList.split("\n");
+				 String AsyncCompList = "";
+				 for(int i=0;i < arrAsyncList.length ;i++ ){
+					 String[] arrtmp = arrAsyncList[i].split("\t");
+					 AsyncCompList = AsyncCompList + arrtmp[0] + ":" + arrtmp[2] + ":" + arrtmp[4] + ":";
+				 }
+				 
 				 for(int i=0;i < ApplKindTxOffsetSizeInfo.length ;i++){
 					 String[] arrtmp = ApplKindTxOffsetSizeInfo[i].split("\t");
 					 if (arrtmp[0].equals(SelectedApplcode)){
@@ -226,7 +236,14 @@ public class TCheckPanelTxDetail {
 				    
 				    String imsi = data.getTxGubun();
 				    if (data.getTxGubun().indexOf("I:") >=0 ) {
-				    	data.setKeyVal1(data.getResKindCode());	
+				    	String compstr = SelectedApplcode + ":" + data.getKindCode() + ":" + data.getTxCode() + ":";
+				    	if (AsyncCompList.indexOf(compstr) >= 0) {
+				    		// Async 응답없는 거래이면, 그대로 종별코드를 설정한다.
+				    		data.setKeyVal1(data.getKindCode());	
+				    	}
+				    	else {
+				    	     data.setKeyVal1(data.getResKindCode());	
+				    	}
 				    }
 				    else {
 				    	data.setKeyVal1(data.getKindCode());	
@@ -313,6 +330,9 @@ public class TCheckPanelTxDetail {
         JMenuItem mkeyval3 = new JMenuItem("비교값3 설정");
         
         JMenuItem mtxupdat = new JMenuItem("거래코드 반영");
+        
+       // JMenuItem mSyncOToI = new JMenuItem("Async O->I");
+       // JMenuItem mSyncIToO = new JMenuItem("Async I->O");
 
     	popuptable.add(mtxgubun);
     	popuptable.addSeparator();
@@ -332,6 +352,9 @@ public class TCheckPanelTxDetail {
  
     	popuptable.addSeparator();
     	popuptable.add(mtxupdat);
+    	//popuptable.addSeparator();
+    	//popuptable.add(mSyncOToI);
+    	//popuptable.add(mSyncIToO);
     	
     	myPaneTxTable.addMouseListener(new MouseAdapter(){
     		public void mouseClicked(MouseEvent e){
@@ -570,6 +593,98 @@ public class TCheckPanelTxDetail {
     		}
 		});
     	
+    	
+    	/*
+    	mSyncOToI.addActionListener(new ActionListener() {
+    		public void actionPerformed(ActionEvent ae){
+			    
+			    int[] selectedrows = myPaneTxTable.getSelectedRows();
+			    
+			    if (selectedrows.length == 2){
+			    	int src = 0;
+			    	int dst = 0;
+			    	String TxGubun1 = (String)myPaneTxTable.getValueAt(selectedrows[0], 4);
+			    	String TxGubun2 = (String)myPaneTxTable.getValueAt(selectedrows[1], 4);
+ 
+			    	if (TxGubun1.indexOf("I:") >= 0) {
+			    		dst = selectedrows[0];
+			    		src = selectedrows[1];
+			    	}
+			    	else {
+			    		dst = selectedrows[1];
+			    		src = selectedrows[0];
+			    	}
+			    	
+				    DefaultMutableTreeNode dataNodesrc = (DefaultMutableTreeNode) permitroot.getChildAt(myPaneTxTable.getSelectedRows()[src]);  
+				    myTxDetailComm datasrc = (myTxDetailComm) dataNodesrc.getUserObject();  
+				    
+				    DefaultMutableTreeNode dataNodedst = (DefaultMutableTreeNode) permitroot.getChildAt(myPaneTxTable.getSelectedRows()[dst]);  
+				    myTxDetailComm datadst = (myTxDetailComm) dataNodedst.getUserObject(); 
+				    
+				    datadst.setKeyOffset1(datasrc.getKeyOffset1());
+				    datadst.setKeyOffset2(datasrc.getKeyOffset2());
+				    datadst.setKeyOffset3(datasrc.getKeyOffset3());
+				    
+				    datadst.setKeyLen1(datasrc.getKeyLen1());
+				    datadst.setKeyLen2(datasrc.getKeyLen2());
+				    datadst.setKeyLen3(datasrc.getKeyLen3());
+					
+				    datadst.setKeyVal1(datasrc.getKeyVal1());
+				    datadst.setKeyVal2(datasrc.getKeyVal2());
+				    datadst.setKeyVal3(datasrc.getKeyVal3());
+ 
+					myPaneTxTable.updateUI();
+			    }
+		  
+    		}
+		});
+    	
+    	
+    	mSyncIToO.addActionListener(new ActionListener() {
+    		public void actionPerformed(ActionEvent ae){
+
+			    int[] selectedrows = myPaneTxTable.getSelectedRows();
+			    
+			    if (selectedrows.length == 2){
+			    	int src = 0;
+			    	int dst = 0;
+			    	String TxGubun1 = (String)myPaneTxTable.getValueAt(selectedrows[0], 4);
+			    	String TxGubun2 = (String)myPaneTxTable.getValueAt(selectedrows[1], 4);
+			    	
+			    	if (TxGubun1.indexOf("I:") >= 0) {
+			    		dst = selectedrows[1];
+			    		src = selectedrows[0];
+			    	}
+			    	else {
+			    		dst = selectedrows[0];
+			    		src = selectedrows[1];
+			    	}
+			    	
+				    DefaultMutableTreeNode dataNodesrc = (DefaultMutableTreeNode) permitroot.getChildAt(myPaneTxTable.getSelectedRows()[src]);  
+				    myTxDetailComm datasrc = (myTxDetailComm) dataNodesrc.getUserObject();  
+				    
+				    DefaultMutableTreeNode dataNodedst = (DefaultMutableTreeNode) permitroot.getChildAt(myPaneTxTable.getSelectedRows()[dst]);  
+				    myTxDetailComm datadst = (myTxDetailComm) dataNodedst.getUserObject(); 
+				    
+				    datadst.setKeyOffset1(datasrc.getKeyOffset1());
+				    datadst.setKeyOffset2(datasrc.getKeyOffset2());
+				    datadst.setKeyOffset3(datasrc.getKeyOffset3());
+				    
+				    datadst.setKeyLen1(datasrc.getKeyLen1());
+				    datadst.setKeyLen2(datasrc.getKeyLen2());
+				    datadst.setKeyLen3(datasrc.getKeyLen3());
+					
+				    datadst.setKeyVal1(datasrc.getKeyVal1());
+				    datadst.setKeyVal2(datasrc.getKeyVal2());
+				    datadst.setKeyVal3(datasrc.getKeyVal3());
+				    
+					myPaneTxTable.updateUI();
+			    }
+		  
+    		}
+		});
+		
+		*/
         return myPaneSub2;
 	}
     private String GetApplInfo()
@@ -731,6 +846,20 @@ public class TCheckPanelTxDetail {
 			}
 		}
 		 
+    }
+    
+    private String GetApplTxMappingListInfo()
+    {
+    	try {
+    		String RetData = Communication("READ_TXMAPPING_LIST", "<NODATA>");
+        	if (RetData.trim().equals("") || RetData.trim().equals("NOT-FOUND")) {
+        		return "";
+        	}
+        	return RetData;
+    	}catch(Exception e) { 
+    		return "";
+    	}
+    	
     }
     
     private String Communication(String cmdstr, String senddata)

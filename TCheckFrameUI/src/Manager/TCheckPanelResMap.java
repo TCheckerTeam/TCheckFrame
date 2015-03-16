@@ -39,7 +39,7 @@ import Manager.DataModel.myResMapModel;
 
 public class TCheckPanelResMap { 
 	private JPanel mypanel = null;
-	private JSplitPane splitPane, splitPane1, splitPane2;
+	private JSplitPane splitPane, splitPane0, splitPane1, splitPane2;
 	private JXTreeTable myPaneTxTable;
 	private String SelectedApplcode = "";
 	private JLabel lblReqAppl = null;
@@ -61,36 +61,40 @@ public class TCheckPanelResMap {
 		GraphicsEnvironment ee = GraphicsEnvironment.getLocalGraphicsEnvironment();
         GraphicsDevice[] gd = ee.getScreenDevices();
 		Rectangle rect = ee.getMaximumWindowBounds();
-		int left_width  = rect.width / 100 * 25;
+		int left_width  = rect.width / 100 * 70;
 		int left_height = rect.height / 100 * 50; 
  
 		 
 		mypanel.setLayout(new BorderLayout());
 		
-        splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT); 
-        splitPane1 = new JSplitPane(JSplitPane.VERTICAL_SPLIT); 
-        splitPane2 = new JSplitPane(JSplitPane.VERTICAL_SPLIT); 
  
-        splitPane1.setContinuousLayout(true); //연속적인 레이아웃 기능 활성화
-        splitPane1.setRightComponent(Init_Table());
-        splitPane1.setLeftComponent(Init_Button());
-        splitPane1.setDividerLocation(95);
-        splitPane1.setDividerSize(6); //디바이더(분리대) 굵기 설정
-        splitPane1.setBackground(Color.BLACK);
+		splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT); 
+        splitPane1 = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT); 
+        splitPane2 = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT); 
  
+
+        //상위 요청/응답 거래목록
         splitPane2.setContinuousLayout(true); //연속적인 레이아웃 기능 활성화
         splitPane2.setRightComponent(Init_Tree_Response());
         splitPane2.setLeftComponent(Init_Tree_Request());
-        splitPane2.setDividerLocation(left_height);
+        splitPane2.setDividerLocation(left_width / 2);
         splitPane2.setDividerSize(6); //디바이더(분리대) 굵기 설정
         splitPane2.setBackground(Color.BLACK);
+        
+        //상위 초기화버트  + 상위 요청/응답 거래목록
+        splitPane1.setContinuousLayout(true); //연속적인 레이아웃 기능 활성화
+        splitPane1.setRightComponent(Init_Button());
+        splitPane1.setLeftComponent(splitPane2);
+        splitPane1.setDividerLocation(left_width);
+        splitPane1.setDividerSize(6); //디바이더(분리대) 굵기 설정
+        splitPane1.setBackground(Color.BLACK);
         
         //JSplitPane 설정
  
         splitPane.setContinuousLayout(true); //연속적인 레이아웃 기능 활성화
-        splitPane.setLeftComponent(splitPane2); //좌측 컴포넌트 장착
-        splitPane.setRightComponent(splitPane1); //우측 컴포넌트 장착
-        splitPane.setDividerLocation(300); //디바이더(분리대) 위치 설정      
+        splitPane.setLeftComponent(splitPane1); //좌측 컴포넌트 장착
+        splitPane.setRightComponent(Init_Table()); //우측 컴포넌트 장착
+        splitPane.setDividerLocation(left_height); //디바이더(분리대) 위치 설정      
         splitPane.setDividerSize(6); //디바이더(분리대) 굵기 설정
         splitPane.setBackground(Color.BLACK);
         
@@ -102,42 +106,35 @@ public class TCheckPanelResMap {
 	private JScrollPane Init_Tree_Request()
 	{
 	    JTree  xTree = null;
-		DefaultMutableTreeNode root, node, nodekind = null, nodetx = null;
+		DefaultMutableTreeNode root, node = null, nodekind = null, nodetx = null;
+		String oldappl = "";
         String oldkind = "";
         
         root = new DefaultMutableTreeNode("요청거래");
-        String applinfo = GetApplInfo();
-        String[] arrtmp = applinfo.split("\n");
-        for(int i=0;i < arrtmp.length ;i++){
-        	if (arrtmp[i].trim().equals("")) break;
-        	String[] arrtmpsub = arrtmp[i].split("\t");
-        	node = new DefaultMutableTreeNode(arrtmpsub[0] + " - " + arrtmpsub[1]);
+        
+        String txmappinglist = GetApplTxMappingListInfo();
+        String[] arrtxmappinglist = txmappinglist.split("\n");
+        for(int i=0;i < arrtxmappinglist.length ;i++){
+        	if (arrtxmappinglist[i].trim().equals("")) break;
         	
-        	//거래정보 
-        	oldkind = "";
-        	String txinfo = GetApplTxInfo(arrtmpsub[0]);
-        	String[] arrtxinfo = txinfo.split("\n");
-        	for(int j=0;j < arrtxinfo.length ;j++){
-        		if (arrtxinfo[j].trim().equals("")) break;
-        		
-        		
-        		String[] arrtmptxinfo = arrtxinfo[j].split("\t");
+        	String[] arrtmpsub = arrtxmappinglist[i].split("\t");
+        	
+        	if (!arrtmpsub[0].equals(oldappl)){
+        		node = new DefaultMutableTreeNode(arrtmpsub[0] + " - " + arrtmpsub[1]);
+        		root.add(node);
 
-                if (!arrtmptxinfo[0].equals(oldkind)){
-                	nodekind = new DefaultMutableTreeNode(arrtmptxinfo[0] + " - " + arrtmptxinfo[1]);
-                	node.add(nodekind);
-                	
-                	nodetx = new DefaultMutableTreeNode(arrtmptxinfo[2] + " - " + arrtmptxinfo[3]);
-                	nodekind.add(nodetx);
-        		}
-                else {
-                	nodetx = new DefaultMutableTreeNode(arrtmptxinfo[2] + " - " + arrtmptxinfo[3]);
-                	nodekind.add(nodetx);
-                }
-                oldkind =  arrtmptxinfo[0];
+            	oldappl = arrtmpsub[0];
+            	oldkind = "";
         	}
-        	
-        	root.add(node);
+        	if (!arrtmpsub[2].equals(oldkind)){
+        		nodekind = new DefaultMutableTreeNode(arrtmpsub[2] + " - " + arrtmpsub[3]);
+            	node.add(nodekind);
+            	
+            	oldkind = arrtmpsub[2];
+        	}
+
+        	nodetx = new DefaultMutableTreeNode(arrtmpsub[4] + " - " + arrtmpsub[5]);
+        	nodekind.add(nodetx);
         }
         
         xTree = new JTree(root);
@@ -168,41 +165,34 @@ public class TCheckPanelResMap {
 	private JScrollPane Init_Tree_Response()
 	{
 	    JTree  xTree = null;
-		DefaultMutableTreeNode root, node, nodekind = null, nodetx = null;
+		DefaultMutableTreeNode root, node= null, nodekind = null, nodetx = null;
+		String oldappl = "";
         String oldkind = "";
         
         root = new DefaultMutableTreeNode("응답거래");
-        String applinfo = GetApplInfo();
-        String[] arrtmp = applinfo.split("\n");
-        for(int i=0;i < arrtmp.length ;i++){
-        	if (arrtmp[i].trim().equals("")) break;
-        	String[] arrtmpsub = arrtmp[i].split("\t");
-        	node = new DefaultMutableTreeNode(arrtmpsub[0] + " - " + arrtmpsub[1]);
+        String txmappinglist = GetApplTxMappingListInfo();
+        String[] arrtxmappinglist = txmappinglist.split("\n");
+        for(int i=0;i < arrtxmappinglist.length ;i++){
+        	if (arrtxmappinglist[i].trim().equals("")) break;
         	
-        	//거래정보 
-        	oldkind = "";
-        	String txinfo = GetApplTxInfo(arrtmpsub[0]);
-        	String[] arrtxinfo = txinfo.split("\n");
-        	for(int j=0;j < arrtxinfo.length ;j++){
-        		if (arrtxinfo[j].trim().equals("")) break;
-        		
-        		String[] arrtmptxinfo = arrtxinfo[j].split("\t");
- 
-                if (!arrtmptxinfo[0].equals(oldkind)){
-                	nodekind = new DefaultMutableTreeNode(arrtmptxinfo[0] + " - " + arrtmptxinfo[1]);
-                	node.add(nodekind);
-                	
-                	nodetx = new DefaultMutableTreeNode(arrtmptxinfo[2] + " - " + arrtmptxinfo[3]);
-                	nodekind.add(nodetx);
-        		}
-                else {
-                	nodetx = new DefaultMutableTreeNode(arrtmptxinfo[2] + " - " + arrtmptxinfo[3]);
-                	nodekind.add(nodetx);
-                }
-                oldkind =  arrtmptxinfo[0];
+        	String[] arrtmpsub = arrtxmappinglist[i].split("\t");
+        	
+        	if (!arrtmpsub[0].equals(oldappl)){
+        		node = new DefaultMutableTreeNode(arrtmpsub[0] + " - " + arrtmpsub[1]);
+        		root.add(node);
+
+            	oldappl = arrtmpsub[0];
+            	oldkind = "";
         	}
-        	
-        	root.add(node);
+        	if (!arrtmpsub[2].equals(oldkind)){
+        		nodekind = new DefaultMutableTreeNode(arrtmpsub[2] + " - " + arrtmpsub[3]);
+            	node.add(nodekind);
+            	
+            	oldkind = arrtmpsub[2];
+        	}
+
+        	nodetx = new DefaultMutableTreeNode(arrtmpsub[4] + " - " + arrtmpsub[5]);
+        	nodekind.add(nodetx);
         }
         
         xTree = new JTree(root);
@@ -320,22 +310,34 @@ public class TCheckPanelResMap {
     	myPaneSub1.add(txtResPortNo);
     	 
         //컴포넌트 위치 고정
-    	lbltmp1.setBounds(10, 5, 65, 20); lblReqAppl.setBounds(75, 5, 380, 20);
-    	lbltmp2.setBounds(10, 28, 65, 20); lblReqKind.setBounds(75, 28, 380, 20);
-    	lbltmp3.setBounds(10, 50, 65, 20); lblReqTx.setBounds(75, 50, 380, 20);
+    	lbltmp1.setBounds(10, 5, 65, 20); lblReqAppl.setBounds(75, 5, 500, 20);
+    	lbltmp2.setBounds(10, 28, 65, 20); lblReqKind.setBounds(75, 28, 500, 20);
+    	lbltmp3.setBounds(10, 50, 65, 20); lblReqTx.setBounds(75, 50, 500, 20);
     	
-    	lbltmp4.setBounds(400, 5, 65, 20); lblResAppl.setBounds(465, 5, 380, 20);
-    	lbltmp5.setBounds(400, 28, 65, 20); lblResKind.setBounds(465, 28, 380, 20);
-    	lbltmp6.setBounds(400, 50, 65, 20); lblResTx.setBounds(465, 50, 380, 20);
-    	
-    	lbltmp.setBounds(400, 72, 380, 20);
-    	
-    	txtResPortNo.setBounds(465, 72, 80, 20);
+    	lbltmp4.setBounds(10, 85, 65, 20); lblResAppl.setBounds(75, 85, 500, 20);
+    	lbltmp5.setBounds(10, 108, 65, 20); lblResKind.setBounds(75, 108, 500, 20);
+    	lbltmp6.setBounds(10, 130, 65, 20); lblResTx.setBounds(75, 130, 500, 20);
+    	lbltmp.setBounds(10, 150, 380, 20);
+
+    	txtResPortNo.setBounds(77, 152, 80, 20);
    
-    	btnRefresh.setBounds(800, 5, 120, 28);
-    	btnSave.setBounds(800, 35, 120, 28);
-    	btnDelete.setBounds(800, 65, 120, 28);
+    	btnRefresh.setBounds(10, 180, 110, 28);
+    	btnSave.setBounds(125, 180, 110, 28);
+    	btnDelete.setBounds(240, 180, 110, 28);
     	
+    	
+    	JLabel lbltitle1   = new JLabel(" >>> Async 거래이고,  In 또는 Out-Bound 거래에 대하여 "); myPaneSub1.add(lbltitle1);
+    	JLabel lbltitle2   = new JLabel(" >>> 기 작성된 응답전문을 바로 리턴 할 수 있도록 "); myPaneSub1.add(lbltitle2);
+    	JLabel lbltitle3   = new JLabel(" >>> 연결하는 작업화면입니다. 그리고, "); myPaneSub1.add(lbltitle3);
+    	JLabel lbltitle4   = new JLabel(" >>> 응답포트는 Out-Bound 거래에 대한 응답포드가"); myPaneSub1.add(lbltitle4);
+    	JLabel lbltitle5   = new JLabel(" >>> 다를 경우에 설정합니다."); myPaneSub1.add(lbltitle5);
+    	
+    	lbltitle1.setBounds(10, 220, 500, 20);
+    	lbltitle2.setBounds(10, 240, 500, 20);
+    	lbltitle3.setBounds(10, 260, 500, 20);
+    	lbltitle4.setBounds(10, 280, 500, 20);
+    	lbltitle5.setBounds(10, 300, 500, 20);
+   
     	return myPaneSub1;
 	}
 	
@@ -502,6 +504,22 @@ public class TCheckPanelResMap {
     		String RetData = Communication("READ_APPLTXINFO", pApplCode);
         	if (RetData.trim().equals("") || RetData.trim().equals("NOT-FOUND")) {
         		JOptionPane.showMessageDialog(null,"업무코드[" + pApplCode + "]에 대한 정보를 가져오지 못했습니다.");
+        		return "";
+        	}
+        	return RetData;
+    	}catch(Exception e) { 
+    		return "";
+    	}
+    	
+    }
+    
+    
+    private String GetApplTxMappingListInfo()
+    {
+    	try {
+    		String RetData = Communication("READ_TXMAPPING_LIST", "<NODATA>");
+        	if (RetData.trim().equals("") || RetData.trim().equals("NOT-FOUND")) {
+        		JOptionPane.showMessageDialog(null,"업무별 거래 정보를 가져오지 못했습니다.");
         		return "";
         	}
         	return RetData;

@@ -9,8 +9,9 @@ public class ThreadTcpServerMain extends Thread{
  
 	public ThreadTcpServerMain(CommData commdata)
     { 
-    	COMMDATA = commdata;
  
+    	COMMDATA = commdata;
+    
     }
     public void run()
     {
@@ -21,7 +22,7 @@ public class ThreadTcpServerMain extends Thread{
 		    	  if (server == null) server = new ServerSocket(Integer.parseInt(COMMDATA.GetLU_NAME()));
   	        	  Socket client = server.accept();
   	        	
-  	        	  String   outlineinfo = Proc_DBGetOut_LineInfo();
+  	        	  
 		          String   lineinfo = Proc_DBGetTchecker_LineInfo();
   	        	  String[] arrtmp = lineinfo.split("\t");
  
@@ -35,6 +36,7 @@ public class ThreadTcpServerMain extends Thread{
   	        	  COMMDATA.SetLEN_OFFST     (arrtmp[7]);
   	        	  COMMDATA.SetLEN_SIZE      (arrtmp[8]);
 
+  	        	  String   outlineinfo = Proc_DBGetOut_LineInfo();
     			  Proc_SetOut_LineInfo(COMMDATA, outlineinfo, arrtmp[1]);
 				  ThreadTcpServer tmpthread = new ThreadTcpServer(COMMDATA, client);
 				  tmpthread.start();
@@ -89,7 +91,7 @@ public class ThreadTcpServerMain extends Thread{
 		isql = isql + "\n ) b                                                                                    ";
 		isql = isql + "\n where a.out_symbname = b.symbname                                                      ";
         isql = isql + "\n   AND a.LU_NAME   = '" + COMMDATA.GetLU_NAME() + "' ";
-        isql = isql + "\n   AND a.connect_type = '" + COMMDATA.GetCONNECT_TYPE() + "' ";
+        isql = isql + "\n   AND a.connect_type = " + COMMDATA.GetCONNECT_TYPE() + "  ";
  
 		String retdata = COMMDATA.GetDBManager().SearchData(isql);
 		if (retdata == null || retdata.equals("")) {

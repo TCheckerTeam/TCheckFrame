@@ -95,7 +95,8 @@ public class ThreadListenerRecvSub extends Thread{
     	}
     	gIndex = 0;
     	
-    	//WriteMsg("수신전문 : " + recvdata);
+    	WriteMsg("수신 전문데이터를 출력\n[" + recvdata + "]\n");
+
     	
         //응답전문에 대한 데이타를 셋팅한다.
         int rowidx = 0;

@@ -136,18 +136,27 @@ public class ThreadTcpServer extends Thread{
     		
     		
             if (COMMDATA.GetCOMM_HEAD_TYPE().equals("0") ){
+            	
+             
             	//Head Buffer 생성 및 읽기
             	HEAD = new byte[Integer.parseInt(COMMDATA.GetCOMM_HEAD_SIZE())];
             	for(int i=0;i < HEAD.length ;i++)  HEAD[i] = disWork.readByte();
  
+            	for(int i=0;i < HEAD.length ;i++)  {
+            		if (HEAD[i] == (byte)0) HEAD[i] = (byte)32;
+            	}
+ 
             	//Body Buffer 생성 및 일기
             	if (COMMDATA.GetLEN_TYPE().equals("10")){
-            		//길이정보가 길이필드 이후의 길이값 : 통신헤더일 경우 메세지의 전체크기를 길이정보로 설정한다.
-            		READDATA = new byte[Integer.parseInt(new String(HEAD))];
-            		
-            		int tmplen = Integer.parseInt(new String(HEAD));
+ 
+            		tmplenbyte = new byte[Integer.parseInt(COMMDATA.GetLEN_SIZE())];
+            		System.arraycopy(HEAD,Integer.parseInt(COMMDATA.GetLEN_OFFST()), tmplenbyte, 0, tmplenbyte.length);
+            		int tmplen = Integer.parseInt(new String(tmplenbyte));
+ 
             		READDATA = new byte[tmplen];
-            		for(int i=0;i < tmplen ;i++) READDATA[i] = disWork.readByte();
+            		for(int i=0;i < tmplen ;i++) {
+            			READDATA[i] = disWork.readByte();
+            		}
              	}
             	else if (COMMDATA.GetLEN_TYPE().equals("50")){
             		//길이필드 이후의 길이값(Integer) : 공통헤더일 경우에 메세지의 전체크기에서 길이 Offset 및 길이 Size 를 뺀 결과값을 길이정보로 설정한다.
@@ -176,6 +185,10 @@ public class ThreadTcpServer extends Thread{
             	HEAD = new byte[Integer.parseInt(COMMDATA.GetCOMM_HEAD_SIZE())];
             	for(int i=0;i < HEAD.length ;i++) HEAD[i] = disWork.readByte();
 
+            	for(int i=0;i < HEAD.length ;i++)  {
+            		if (HEAD[i] == (byte)0) HEAD[i] = (byte)32;
+            	}
+            	
             	//Head에서 길이정보를 추출한다.
         		if (COMMDATA.GetLEN_TYPE().equals("10") || COMMDATA.GetLEN_TYPE().equals("11") || COMMDATA.GetLEN_TYPE().equals("12")){
             		tmplenbyte = new byte[Integer.parseInt(COMMDATA.GetLEN_SIZE())];
@@ -315,13 +328,13 @@ public class ThreadTcpServer extends Thread{
 					else {
 						/* Async Inbound 거래이고, 응답거래매핑에 등록되여 있는 경우 응답을 받기 위해서 요청 거래를 남겨 놓는다. */
 						/* 요청 업무/종별/거래/User PC IP */
-						COMMDATA.GetTCheckerLog().WriteLog("D", "TcpManager", "Async Inbound 응답 거래 :" + this.UserID + ":" + this.ApplCode + ":" + this.KindCode + ":" + this.TxCode + ":" + this.UserPCIP);
+						COMMDATA.GetTCheckerLog().WriteLog("D", "TcpManager", "Async Inbound 응답 거래 :" + this.UserID + ":" + this.ApplCode + ":" + this.KindCode + ":" + this.TxCode + ":" + this.UserPCIP + ":" + this.COMMDATA.GetLU_NAME());
 						Proc_InboundAsyncRes(this.ApplCode, this.KindCode, this.TxCode, this.UserPCIP);
 								
 					}
 		    		/*----------- 전문전송시 오류가 발생하면, 무조건 Thread를 종료한다. -----------*/
 				 	try {
-				 		COMMDATA.GetTCheckerLog().WriteLog("D", "TcpManager", this.UserID + ":" + this.ApplCode + ":" + this.KindCode + ":" + this.TxCode + "Anylink로 전송 : \n  [" + tmpstr + "]");
+				 		COMMDATA.GetTCheckerLog().WriteLog("D", "TcpManager", this.UserID + ":" + this.ApplCode + ":" + this.KindCode + ":" + this.TxCode + ":Anylink로 전송 : \n  [" + tmpstr + "]");
 				 		dos.write(makeMsg, 0, makeMsg.length);
 				 		if (COMMDATA.GetCONNECT_TYPE().equals("7")){
 				 			dos.write(EOD, 0, EOD.length);
@@ -412,7 +425,7 @@ public class ThreadTcpServer extends Thread{
 	 		String tmpReqRes    = "";
 	 		String tmpInOut_Flag= "";
 
-    		COMMDATA.GetTCheckerLog().WriteLog("D", "TcpManager", "Recv From Anylink:" + new String(RecvData));
+    		COMMDATA.GetTCheckerLog().WriteLog("D", "TcpManager", "Recv From Anylink:\n[" + new String(RecvData) + "]");
     		
 			//수신데이타에서 Default 업무코드에 대한 종별 및 거래코드를 추출한다.
     		//Retrun : appl_code, kind_code, tx_code, INOUT_FLAG, MAP_FLAG
@@ -421,6 +434,7 @@ public class ThreadTcpServer extends Thread{
 				COMMDATA.GetTCheckerLog().WriteLog("D", "TcpManager", "업무/종별/거래코드를 판단 할 수 없는 데이타를 수신하였습니다.");
 				return true;
 			}
+			
 			String[] worktmp = retstr.split("\t");
 			tmpApplCode   = worktmp[0].trim();
 			tmpKindCode   = worktmp[1].trim();
@@ -430,26 +444,38 @@ public class ThreadTcpServer extends Thread{
 		 	COMMDATA.GetTCheckerLog().WriteLog("D", "TcpManager", "Share Info:" + tmpApplCode + ":" + tmpKindCode + ":" + tmpTxCode + ":" + tmpInOut_Flag);
  
 	 		//수신전문이 요청에 대한 응답전문인지 아니면, Anylink 에서 요청한 거래인지 판단한다.
-	 		if (tmpInOut_Flag.equals("O") || tmpTxCode.equals("")){
-	 			/*-------- 응답전문을 조립하여 Anylink로 응답전문을 전달한다. ------------*/
-		 		SendResponseToAnylink(tmpApplCode, tmpKindCode, tmpTxCode, RecvData);
-	 		}
-	 		else {
-	 			/*-------- 응답전문을 조립하여 사용자에게 응답전문을 전달한다. ------------*/
-	 			String findkey = tmpApplCode + "\t" + tmpKindCode + "\t" + tmpTxCode;
-				if (!findkey.equals("")){
-					SendInfo sendinfo = hashsender.get(findkey);
-					if (sendinfo != null) {
-						hashsender.remove(findkey);
-		 			    SendResponseToUserPC(sendinfo.getUserID(), sendinfo.getUserIP(), tmpApplCode, tmpKindCode, tmpTxCode, RecvData, RecvData.length );
-					}
-					else {
-			 			/*-------- Inbound 거래에 대하여 Async 응답으로 응답매핑에 등록되여 있으면  --------*/
-			 			Proc_InboundResLink(tmpApplCode, tmpKindCode, tmpTxCode, RecvData);
-					}
-				}
-	 		}
-	    	 
+		 	if (isResponseMsg(this.UserID, tmpApplCode, tmpKindCode, tmpTxCode)) {
+		 		/* Sync 거래인 경우 */
+		 		if (tmpInOut_Flag.equals("O") || tmpTxCode.equals("")){
+	 				/* Anylink에서 요청한 전문에 대하여 응답전문을 전송하는 경우 */
+		 			COMMDATA.GetTCheckerLog().WriteLog("D", "TcpManager", "SendResponseToAnylink:" + tmpApplCode + ":" + tmpKindCode + ":" + tmpTxCode + ":" + tmpInOut_Flag + ":" + "");
+					SendResponseToAnylink(tmpApplCode, tmpKindCode, tmpTxCode, RecvData);	
+		 		}
+		 		else {
+	 				/*-------- 응답전문을 조립하여 사용자에게 응답전문을 전달한다. ------------*/
+	 				COMMDATA.GetTCheckerLog().WriteLog("D", "TcpManager", "User Sync Response"); 
+	 				String findkey = tmpApplCode + "\t" + tmpKindCode + "\t" + tmpTxCode;
+					if (!findkey.equals("")){
+						SendInfo sendinfo = hashsender.get(findkey);
+						if (sendinfo != null) {
+							hashsender.remove(findkey);
+			 			    SendResponseToUserPC(sendinfo.getUserID(), sendinfo.getUserIP(), tmpApplCode, tmpKindCode, tmpTxCode, RecvData, RecvData.length );
+						}
+					}	
+		 		}
+		 	}
+		 	else {
+ 				/* Async 거래이며, 즉, Anylink에서 요청한 전문에 대하여 응답을 수신하지 않는 것으로 설정되여 있으면서, 응답매핑에 설정된 경우로 */
+ 				/* TCHECKER_ASYNCINRES 에 In-Bound 요청거래가 목록이 있으면, User PC로 응답을 전송하고    */
+		 		/* TCHECKER_ASYNCINRES 에 In-Bound 요청거래가 목록이 없으면, 응답전문을 Anylink로 전송함.  */
+ 				COMMDATA.GetTCheckerLog().WriteLog("D", "TcpManager", "User ASync Response");
+	 			if ( Proc_InboundResLink(tmpApplCode, tmpKindCode, tmpTxCode, RecvData) != true ){
+	 				/* Anylink에서 요청한 전문에 대하여 응답전문을 전송하는 경우 */
+		 			COMMDATA.GetTCheckerLog().WriteLog("D", "TcpManager", "SendResponseToAnylink:" + tmpApplCode + ":" + tmpKindCode + ":" + tmpTxCode + ":" + tmpInOut_Flag + ":" + "");
+					SendResponseToAnylink(tmpApplCode, tmpKindCode, tmpTxCode, RecvData);	
+	 			}
+		 	}
+		 	 	    	 
 	    }
  
 		return true;
@@ -524,7 +550,7 @@ public class ThreadTcpServer extends Thread{
 		            	else {
 		            		System.arraycopy(mapdata, 0, tmpdat, 0, mapdata.length);
 		            	}
-		            	COMMDATA.GetTCheckerLog().WriteLog("D", "TcpManager", UserID + ":" + ApplCode + ":" + KindCode + ":" + TxCode + ":" + "A-4:" + i);
+		            	 
 		            	baos.write(tmpdat, 0, tmpdat.length); 
 		            }
 		            MSGDATA = baos.toByteArray();
@@ -555,7 +581,7 @@ public class ThreadTcpServer extends Thread{
 	            
 	            if (COMMDATA.GetCOMM_HEAD_TYPE().equals("0") ){
 	            	HEAD = new byte[Integer.parseInt(COMMDATA.GetCOMM_HEAD_SIZE())];
-	            	
+	            	for(int i=0 ; i < HEAD.length ;i++) HEAD[i] = (byte)32;  //HEAD를 공백문자로 초기화
 	            	if (COMMDATA.GetLEN_TYPE().equals("10")){
 	            		//길이정보가 길이필드 이후의 길이값 : 통신헤더일 경우 메세지의 전체크기를 길이정보로 설정한다.
 		    			String SendLenFmt = String.format("%%0%dd", Integer.parseInt(COMMDATA.GetLEN_SIZE()));
@@ -585,6 +611,9 @@ public class ThreadTcpServer extends Thread{
             		System.arraycopy(HEAD, 0, tmpdat, 0, HEAD.length);
             		System.arraycopy(MSGDATA, 0, tmpdat, HEAD.length, MSGDATA.length);
   
+            		String datamsg = UserID + ":" + ApplCode + ":" + KindCode + ":" + TxCode + ":" + "MakeSendMsg OK \n[" + new String(tmpdat) + "]";
+            		COMMDATA.GetTCheckerLog().WriteLog("D", "TcpManager", datamsg);
+            		
             		return tmpdat;
 	            }
 	            if (COMMDATA.GetCOMM_HEAD_TYPE().equals("1")){
@@ -644,6 +673,9 @@ public class ThreadTcpServer extends Thread{
 	            		return ("ERROR:" + errmsg).getBytes();
 	            	}
  
+            		String datamsg = UserID + ":" + ApplCode + ":" + KindCode + ":" + TxCode + ":" + "MakeSendMsg OK \n[" + new String(tmpdat) + "]";
+            		COMMDATA.GetTCheckerLog().WriteLog("D", "TcpManager", datamsg);
+            		
             	    return tmpdat;
 	            }
 	            if (COMMDATA.GetCOMM_HEAD_TYPE().equals("2")){
@@ -651,10 +683,18 @@ public class ThreadTcpServer extends Thread{
 	            	//통신헤더가 고정길이 방식일 경우 고정길이 만큼을 버퍼를 할당하여, 메세지를 셋팅한다.
 	            	byte[] tmpdat = new byte[Integer.parseInt(COMMDATA.GetLEN_SIZE())];
 	            	System.arraycopy(MSGDATA, 0, tmpdat, 0, MSGDATA.length);
+	            	
+	            	String datamsg = UserID + ":" + ApplCode + ":" + KindCode + ":" + TxCode + ":" + "MakeSendMsg OK \n[" + new String(tmpdat) + "]";
+            		COMMDATA.GetTCheckerLog().WriteLog("D", "TcpManager", datamsg);
+            		
 	            	return tmpdat;
 	            }
 	            if (COMMDATA.GetCOMM_HEAD_TYPE().equals("3")){
 	            	//End문자 방식일 경우에 메세지를 그대로 리턴한다.
+	            	
+	            	String datamsg = UserID + ":" + ApplCode + ":" + KindCode + ":" + TxCode + ":" + "MakeSendMsg OK \n[" + new String(MSGDATA) + "]";
+            		COMMDATA.GetTCheckerLog().WriteLog("D", "TcpManager", datamsg);
+            		
 	            	return MSGDATA;
 	            }
 			}
@@ -1001,18 +1041,23 @@ public class ThreadTcpServer extends Thread{
     
     private void Proc_InboundAsyncRes(String pApplCode, String pKindCode, String pTxCode, String pIP)
     {
+    	String retstr = SearchResLinkOne(pApplCode,  pKindCode,  pTxCode);
+    	if (retstr.trim().equals("")) return;
+    	
+    	String[] arrtmp = retstr.split("\t");
+    	 
 		SimpleDateFormat formatter = new java.text.SimpleDateFormat("yyyyMMdd", java.util.Locale.KOREA);
 		String iDate = formatter.format(new java.util.Date()); //요청일자
 		
 		formatter = new java.text.SimpleDateFormat("HHmmss", java.util.Locale.KOREA);
 		String iTime = formatter.format(new java.util.Date());  //요청시간
-		
+ 
 		String isql = "INSERT INTO TCHECKER_ASYNCINRES(TRAN_DATE,TRAN_TIME,APPL_CODE,KIND_CODE,TX_CODE,IP,SEND_YN) VALUES(  ";
 		isql = isql + "\n '" + iDate + "', ";
 		isql = isql + "\n '" + iTime + "', ";
-		isql = isql + "\n '" + pApplCode + "', ";
-		isql = isql + "\n '" + pKindCode + "', ";
-		isql = isql + "\n '" + pTxCode + "', ";
+		isql = isql + "\n '" + arrtmp[0] + "', ";
+		isql = isql + "\n '" + arrtmp[2] + "', ";
+		isql = isql + "\n '" + arrtmp[4] + "', ";
 		isql = isql + "\n '" + pIP + "', ";
 		isql = isql + "\n 'N') ";
 
@@ -1020,10 +1065,8 @@ public class ThreadTcpServer extends Thread{
 		COMMDATA.GetDBManager().ServerDBCommit();
     }
     
-	private void Proc_InboundResLink(String pApplCode, String pKindCode, String pTxCode, byte[] recvdata)
+	private boolean Proc_InboundResLink(String pApplCode, String pKindCode, String pTxCode, byte[] recvdata)
 	{
- 		
-
 		SimpleDateFormat formatter = new java.text.SimpleDateFormat("yyyyMMdd", java.util.Locale.KOREA);
 		String iDate = formatter.format(new java.util.Date()); //요청일자
 		
@@ -1039,7 +1082,7 @@ public class ThreadTcpServer extends Thread{
  
 		String retdata = COMMDATA.GetDBManager().SearchData(isql);
 		if (retdata == null || retdata.equals("")) {
-			return ;
+			return false ;
 		}
 		
 		String[] arrtmp = retdata.split("\n");
@@ -1076,9 +1119,34 @@ public class ThreadTcpServer extends Thread{
 	    	}catch(Exception e) {
 	    		try{if(user_client != null) user_client.close();}catch(Exception e1){}
 	    	}
-	    	
-
 		}
- 
+        return true;
 	}  
+	
+	private String SearchResLinkOne(String pApplCode, String pKindCode, String pTxCode)
+	{
+		String isql = "";
+		isql = isql + "   SELECT R.RES_APPL_CODE, A.APPL_NAME, R.RES_KIND_CODE, K.NAME, R.RES_TX_CODE, T.NAME, R.RES_PORTNO, 'NO' ";
+		isql = isql + "\n FROM TCHECKER_RESLINK R, ALAPPL A, ALKIND K, ALTX T                                 ";
+		isql = isql + "\n WHERE R.REQ_APPL_CODE = '" + pApplCode + "'                                         ";
+		isql = isql + "\n   AND R.REQ_KIND_CODE = '" + pKindCode + "'                                         ";
+		isql = isql + "\n   AND R.REQ_TX_CODE   = '" + pTxCode   + "'                                         ";
+		isql = isql + "\n   AND R.REQ_APPL_CODE = A.APPL_CODE                                                 ";
+		isql = isql + "\n   AND R.REQ_APPL_CODE = K.APPL_CODE                                                 ";
+		isql = isql + "\n   AND R.REQ_KIND_CODE = K.REP_KIND_CODE                                             ";
+		isql = isql + "\n   AND R.REQ_APPL_CODE = T.APPL_CODE                                                 ";
+		isql = isql + "\n   AND R.REQ_KIND_CODE = T.REP_KIND_CODE                                             ";
+		isql = isql + "\n   AND R.REQ_TX_CODE   = T.TX_CODE                                                   ";
+		isql = isql + "\n   AND A.STA_TYPE = 1                                                                ";
+		isql = isql + "\n   AND K.STA_TYPE = 1                                                                ";
+		isql = isql + "\n   AND T.STA_TYPE = 1                                                                ";
+		String retdata = COMMDATA.GetDBManager().SearchData(isql);
+ 
+		if (retdata == null || retdata.equals("")) return "";
+
+ 
+		return retdata;
+	}
+	
+ 
 }

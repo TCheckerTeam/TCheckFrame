@@ -114,6 +114,8 @@ public class ThreadManagerMainSub extends Thread{
              if (datacmd.trim().equals("SAVE_LINEINFO_LEN")) retdata = Proc_DBUpdateLineInfo_LEN(databuf);
              if (datacmd.trim().equals("READ_KINDTX_OFFSET_SIZE")) retdata = Proc_DBSearchKindTxOffsetSize();
              if (datacmd.trim().equals("READ_TLINEINFO")) retdata = Proc_DBSearchTchecker_LineInfo();
+             if (datacmd.trim().equals("READ_SENDPORT")) retdata = Proc_DBSearchSendPort(databuf);
+             
 
              if (datacmd.trim().equals("READ_APPLINFO")) retdata = Proc_DBSearchApplInfo();
              if (datacmd.trim().equals("READ_APPLTXINFO")) retdata = Proc_DBSearchApplTxInfo(databuf);
@@ -137,7 +139,9 @@ public class ThreadManagerMainSub extends Thread{
              if (datacmd.trim().equals("READ_ADMINIP")) retdata = Proc_DBSearchAdminIP();
 
              if (datacmd.trim().equals("CHECK_USERID")) retdata = Proc_DBCheck_UserID(databuf);
-            
+             if (datacmd.trim().equals("READ_TXMAPPING_LIST")) retdata = Proc_DBSearchTxMappingList();
+             
+             
              if (datacmd.trim().equals("READ_WIRELESSRES")) {
           	     String userpcip = client.getInetAddress().toString().replace("/", "");
           	      retdata = Proc_DBSearchWirelessRes(databuf, userpcip);
@@ -285,18 +289,34 @@ public class ThreadManagerMainSub extends Thread{
 	}
 	private String Proc_DBSearchTchecker_LineInfo()
 	{
-		String isql = " SELECT APPL_CODE , LU_NAME , CONNECT_TYPE , STA_TYPE, COMM_HEAD_TYPE , COMM_HEAD_SIZE , ";
-	    isql = isql + "        LEN_TYPE  , LEN_OFFST , LEN_SIZE ";
-	    isql = isql + "\n FROM TCHECKER_LINEINFO                                                            ";
-	    isql = isql + "\n ORDER BY APPL_CODE , LU_NAME , CONNECT_TYPE                                       ";
-        
-        
+		String isql = " SELECT T.APPL_CODE , T.LU_NAME , T.CONNECT_TYPE , T.STA_TYPE, T.COMM_HEAD_TYPE , T.COMM_HEAD_SIZE , ";
+	    isql = isql + "        T.LEN_TYPE  , T.LEN_OFFST , T.LEN_SIZE ";
+	    isql = isql + "\n FROM TCHECKER_LINEINFO T                                                           ";
+	    isql = isql + "\n ORDER BY T.APPL_CODE , T.LU_NAME , T.CONNECT_TYPE                                       ";
+ 
 		String retdata = COMMDATA.GetDBManager().SearchData(isql);
  
 		if (retdata == null || retdata.equals("")) return "NOT-FOUND";
 
 		return retdata;
 	}
+	
+	private String Proc_DBSearchSendPort(String pApplCode)
+	{
+		String isql = " select b.lu_name from algrpline a, alline b ";
+	    isql = isql + "\n where a.symbname = b.symbname                  ";
+	    isql = isql + "\n    and a.gwname = b.gwname                       ";
+	    isql = isql + "\n    and a.appl_code = '" + pApplCode + "'         ";
+	    isql = isql + "\n    and b.sta_type = 1                                  ";
+	    isql = isql + "\n    and b.DIRECTION != 2                             ";
+ 
+		String retdata = COMMDATA.GetDBManager().SearchData(isql);
+ 
+		if (retdata == null || retdata.equals("")) return "NOT-FOUND";
+
+		return retdata;
+	}
+	
 	private String Proc_DBUpdateLineInfo_LEN(String savedata)
 	{
  
@@ -317,7 +337,7 @@ public class ThreadManagerMainSub extends Thread{
     			uSql = uSql + "\n , STA_TYPE   = " + arrtmp[9];
     			uSql = uSql + "\n  Where APPL_CODE    = '" + arrtmp[0] + "' ";
     			uSql = uSql + "\n    AND LU_NAME      = '" + arrtmp[2] + "' ";
-    			uSql = uSql + "\n    AND CONNECT_TYPE = '" + arrtmp[3] + "' ";
+    			uSql = uSql + "\n    AND CONNECT_TYPE =  " + arrtmp[3] + "  ";
  
     			
     			iSql = " Insert Into TCHECKER_LINEINFO (";
@@ -379,7 +399,10 @@ public class ThreadManagerMainSub extends Thread{
 	
 	private String Proc_DBSearchApplInfo()
 	{
-		String isql = " SELECT APPL_CODE,APPL_NAME,REQ_HEADER_SIZE,RES_HEADER_SIZE,REQ_HEAD_MAPP_CLASS,RES_HEAD_MAPP_CLASS,KIND_CODE_OFFSET,KIND_CODE_LEN,TIMEOUT";
+		String isql = " SELECT APPL_CODE,APPL_NAME,REQ_HEADER_SIZE,RES_HEADER_SIZE,";
+		isql = isql + "\n      decode(REQ_HEAD_MAPP_CLASS,'','<NODATA>', REQ_HEAD_MAPP_CLASS) as REQ_HEAD_MAPP_CLASS,  ";
+	    isql = isql + "\n      decode(RES_HEAD_MAPP_CLASS,'','<NODATA>', RES_HEAD_MAPP_CLASS) as RES_HEAD_MAPP_CLASS ,  ";
+		isql = isql + "\n      KIND_CODE_OFFSET,KIND_CODE_LEN,TIMEOUT ";
 	    isql = isql + "\n FROM ALAPPL                  ";
 	    isql = isql + "\n WHERE STA_TYPE = 1 ";
 	    isql = isql + "\n ORDER BY APPL_CODE,APPL_NAME ";
@@ -406,7 +429,8 @@ public class ThreadManagerMainSub extends Thread{
 	private String Proc_DBSearchApplTxInfo(String pApplCode)
 	{
 		String isql = " SELECT C.REP_KIND_CODE, C.NAME, C.TX_CODE, C.ANAME, C.TIMEOUT, C.RES_FLAG, ";
-	    isql = isql + "\n       C.REQ_HEAD_MAPP_CLASS,C.RES_HEAD_MAPP_CLASS,C.RES_BODY_MAPP_CLASS,C.REQ_BODY_MAPP_CLASS, ";
+	    isql = isql + "\n       decode(C.REQ_HEAD_MAPP_CLASS,'','<NODATA>', C.REQ_HEAD_MAPP_CLASS) as REQ_HEAD_MAPP_CLASS, decode(C.RES_HEAD_MAPP_CLASS,'','<NODATA>', C.RES_HEAD_MAPP_CLASS) as RES_HEAD_MAPP_CLASS, ";
+	    isql = isql + "\n       decode(C.RES_BODY_MAPP_CLASS,'','<NODATA>', C.RES_BODY_MAPP_CLASS) as RES_BODY_MAPP_CLASS, decode(C.REQ_BODY_MAPP_CLASS,'','<NODATA>', C.REQ_BODY_MAPP_CLASS) as REQ_BODY_MAPP_CLASS, ";
 	    isql = isql + "\n       C.BNAME, C.NORM_KIND_CODE, C.REQ_TX_CODE_OFFSET, C.TX_CODE_LEN, C.RES_TX_CODE_OFFSET, ";
 	    isql = isql + "\n       NVL(T.INOUT_FLAG, 'N'), NVL(T.MAP_FLAG, 'B'), ";
 	    isql = isql + "\n       NVL(T.KeyOffset1, 0 ), NVL(T.KeyLen1, 0 ), NVL(T.KeyVal1 ,'<NODATA>' ) ,";
@@ -415,7 +439,8 @@ public class ThreadManagerMainSub extends Thread{
 
 	    isql = isql + "\n       FROM ";
 	    isql = isql + "\n (SELECT A.APPL_CODE, B.REP_KIND_CODE, B.NAME, A.TX_CODE, A.NAME ANAME,A.TIMEOUT,A.RES_FLAG, ";
-	    isql = isql + "\n       A.REQ_HEAD_MAPP_CLASS,A.RES_HEAD_MAPP_CLASS,A.RES_BODY_MAPP_CLASS,A.REQ_BODY_MAPP_CLASS, ";
+	    isql = isql + "\n       decode(A.REQ_HEAD_MAPP_CLASS,'','<NODATA>', A.REQ_HEAD_MAPP_CLASS) as REQ_HEAD_MAPP_CLASS , decode(A.RES_HEAD_MAPP_CLASS,'','<NODATA>', A.RES_HEAD_MAPP_CLASS) as RES_HEAD_MAPP_CLASS, ";
+	    isql = isql + "\n       decode(A.RES_BODY_MAPP_CLASS,'','<NODATA>', A.RES_BODY_MAPP_CLASS) as RES_BODY_MAPP_CLASS, decode(A.REQ_BODY_MAPP_CLASS,'','<NODATA>', A.REQ_BODY_MAPP_CLASS) as  REQ_BODY_MAPP_CLASS, ";
 	    isql = isql + "\n       B.NAME BNAME,B.NORM_KIND_CODE,B.REQ_TX_CODE_OFFSET,B.TX_CODE_LEN,B.RES_TX_CODE_OFFSET ";
 	    isql = isql + "\n  FROM ALTX A, ALKIND B, ALAPPL M ";
 	    isql = isql + "\n   WHERE A.STA_TYPE = 1 ";
@@ -436,7 +461,25 @@ public class ThreadManagerMainSub extends Thread{
 
 		return retdata;
 	}
-	
+	private String Proc_DBSearchTxMappingList()
+	{
+		
+		String isql = "   SELECT A.APPL_CODE, M.APPL_NAME, A.REP_KIND_CODE, B.NAME, A.TX_CODE, A.NAME  ";
+	    isql = isql + "\n FROM ALTX A, ALKIND B, ALAPPL M            ";
+	    isql = isql + "\n  WHERE A.STA_TYPE = 1                      ";
+	    isql = isql + "\n    AND A.APPL_CODE = B.APPL_CODE           ";
+	    isql = isql + "\n    AND A.REP_KIND_CODE = B.REP_KIND_CODE   ";
+	    isql = isql + "\n    AND A.APPL_CODE = M.APPL_CODE           ";
+	    isql = isql + "\n    AND B.APPL_CODE = M.APPL_CODE           ";
+	    isql = isql + "\n    AND A.RES_FLAG != 1                     ";
+	    isql = isql + "\n ORDER BY A.APPL_CODE ,A.REP_KIND_CODE, A.TX_CODE         ";
+
+		String retdata = COMMDATA.GetDBManager().SearchData(isql);
+ 
+		if (retdata == null || retdata.equals("")) return "NOT-FOUND";
+
+		return retdata;
+	}
 	private String Proc_DBSearchTxDetail(String pInData)
 	{
 		String isql = " SELECT APPL_CODE , KIND_CODE, TX_CODE , ";
@@ -1317,10 +1360,17 @@ public class ThreadManagerMainSub extends Thread{
 			msg = jc.makeHeader(InstCode, pApplCode, pKindCode, pTxCode, pSendData.getBytes()); // anylink헤더120byte+시스템헤더+데이터헤더+데이터
 			rcvmsg = jc.MapperCall(AnylinkIP, Integer.parseInt(AnylinkPort), msg, MapperName);
  
+			/* Async Inbound 거래이고, 응답거래매핑에 등록되여 있는 경우 응답을 받기 위해서 요청 거래를 남겨 놓는다. */
+			/* 요청 업무/종별/거래/User PC IP */
+			Proc_InboundAsyncRes(pApplCode, pKindCode, pTxCode, pUserPCIP);
+			
 			rcvdata = new byte[rcvmsg.length - 120];
 			for(int i=120; i<rcvmsg.length; i++){
 				rcvdata[i-120]=rcvmsg[i];
 			}
+			
+
+			
 			return new String(rcvdata);
 			//WebtCall-End
 			
@@ -1529,12 +1579,17 @@ public class ThreadManagerMainSub extends Thread{
 			msg = jc.makeHeader(InstCode, pApplCode, pKindCode, pTxCode, mergebytes); // anylink헤더120byte+시스템헤더+데이터헤더+데이터
 			rcvmsg = jc.MapperCall(AnylinkIP, Integer.parseInt(AnylinkPort), msg, MapperName);
  
+			/* Async Inbound 거래이고, 응답거래매핑에 등록되여 있는 경우 응답을 받기 위해서 요청 거래를 남겨 놓는다. */
+			/* 요청 업무/종별/거래/User PC IP */
+			Proc_InboundAsyncRes(pApplCode, pKindCode, pTxCode, pUserPCIP);
+			 
 			rcvdata = new byte[rcvmsg.length - 120];
 			for(int i=120 + rescommsize; i<rcvmsg.length; i++){
 				rcvdata[i-120-rescommsize]=rcvmsg[i];
 			}
-			
- 
+		 
+
+
 			return new String(rcvdata);
 			//WebtCall-End
 			
@@ -1737,16 +1792,7 @@ public class ThreadManagerMainSub extends Thread{
 			
 			File dir3 = new File("./Request/Tcpmap/" + pUserID);
 			if (!dir3.exists()) dir3.mkdir();
-			
-			String   fname = "./Request/Tcpmap/" + pUserID + "/" + pApplCode + "_" + pKindCode + "_" + pTxCode ;
-			
-			File f = new File(fname);
-			COMMDATA.GetTCheckerLog().WriteLog("D", "MgrManager", "f.getAbsolutePath():" + f.getAbsolutePath() );
-			
-			if (f.exists() && pWork.equals("READ")) {
-				return ReadFileData(fname);
-			}
-
+ 
             /*-------- 전문매핑정보를 DB에서 Read하여, 매핑정보를 리턴한다. ------------*/
             String   INOUT_FLAG = "";
             String   MAP_FLAG = "";
@@ -1772,6 +1818,27 @@ public class ThreadManagerMainSub extends Thread{
 			
 			INOUT_FLAG = arrtmpsub[0];
 			MAP_FLAG = arrtmpsub[1];
+			
+			// <BODYBYPASS> 일 경우에 기존 화일에 <BODYBYPASS> 이 있으면 기 존재화일 내용을 그대로 리턴 
+			// 없으면, <BODYBYPASS> 을 기 존재화일 내용에 추가하여 리턴한다.
+			// 만약, <BODYBYPASS> 이 아닌데도 기존 화일에 존재하면 해당 내용을 제거하여 리턴
+			String   fname = "./Request/Tcpmap/" + pUserID + "/" + pApplCode + "_" + pKindCode + "_" + pTxCode ;
+			File f = new File(fname);
+			if (f.exists() && pWork.equals("READ")) {
+				String fileRData = ReadFileData(fname);
+				if (MAP_FLAG.equals("P")) {
+					if (fileRData.indexOf("<BODYBYPASS>") >= 0 ) return fileRData;
+					else return fileRData + "<BODYBYPASS>";
+				}
+				else {
+					if (fileRData.indexOf("<BODYBYPASS>") >= 0 ) {
+						 String[] arrWork = fileRData.split("<BODYBYPASS>");
+						 return arrWork[0];
+					}
+					else  return fileRData;
+				}
+			}
+			
             if (MAP_FLAG.equals("N")) {
             	return "비정형데이타\t비정형데이타\tCHAR\t10000\t<NODATA>\n";
             }
@@ -1787,10 +1854,10 @@ public class ThreadManagerMainSub extends Thread{
 			}
 			
 			//Mapping 명을 읽어온다.
-			  isql = "   select           C.REQ_HEAD_MAPP_CLASS ";
-		      isql = isql + "\n       , C.RES_HEAD_MAPP_CLASS ";
-		      isql = isql + "\n       , A.REQ_BODY_MAPP_CLASS                             ";
-		      isql = isql + "\n       , A.RES_BODY_MAPP_CLASS                             ";
+			  isql = "   select         decode(C.REQ_HEAD_MAPP_CLASS,'','<NODATA>', C.REQ_HEAD_MAPP_CLASS) as REQ_HEAD_MAPP_CLASS ";
+		      isql = isql + "\n       , decode(C.RES_HEAD_MAPP_CLASS,'','<NODATA>', C.RES_HEAD_MAPP_CLASS) as RES_HEAD_MAPP_CLASS ";
+		      isql = isql + "\n       , decode(A.REQ_BODY_MAPP_CLASS,'','<NODATA>', A.REQ_BODY_MAPP_CLASS) as REQ_BODY_MAPP_CLASS ";
+		      isql = isql + "\n       , decode(A.RES_BODY_MAPP_CLASS,'','<NODATA>', A.RES_BODY_MAPP_CLASS) as RES_BODY_MAPP_CLASS ";
 		      isql = isql + "\n from ALTX A , ALKIND B , ALAPPL C                         ";
 		      isql = isql + "\n where A.APPL_CODE = '" + pApplCode + "'                   ";
 		      isql = isql + "\n   and A.REP_KIND_CODE = '" + pKindCode + "'               ";
@@ -1946,8 +2013,8 @@ public class ThreadManagerMainSub extends Thread{
             String   HEAD_CLASS_NAME = "";
 			
 			//Mapping 명을 읽어온다.
-            isql = "   select  C.REQ_HEAD_MAPP_CLASS ";
-            isql = isql + "\n       , C.RES_HEAD_MAPP_CLASS ";
+			isql = "   select         decode(C.REQ_HEAD_MAPP_CLASS,'','<NODATA>', C.REQ_HEAD_MAPP_CLASS) as REQ_HEAD_MAPP_CLASS ";
+		    isql = isql + "\n       , decode(C.RES_HEAD_MAPP_CLASS,'','<NODATA>', C.RES_HEAD_MAPP_CLASS) as RES_HEAD_MAPP_CLASS  ";
             isql = isql + "\n from  ALAPPL C                                            ";
             isql = isql + "\n where C.APPL_CODE = '" + pApplCode + "'                   ";
             isql = isql + "\n   and C.STA_TYPE = '1'                                    ";
@@ -2056,14 +2123,6 @@ public class ThreadManagerMainSub extends Thread{
 			String   pTxCode   = arrtmp[3];
 			String   pWork     = arrtmp[4];
  
-			
-			String   fname = "./Response/Tcpmap/" + pApplCode + "_" + pKindCode + "_" + pTxCode ;
-			
-			File f = new File(fname);
-			if (f.exists() && pWork.equals("READ")) {
-	            return ReadFileData(fname);
-			}
- 
             /*-------- 전문매핑정보를 DB에서 Read하여, 매핑정보를 리턴한다. ------------*/
             String   INOUT_FLAG = "";
             String   MAP_FLAG = "";
@@ -2087,11 +2146,29 @@ public class ThreadManagerMainSub extends Thread{
  
 			arrtmp = retdata.split("\n");
 			String[] arrtmpsub = arrtmp[0].split("\t");
-			
-
-			
+ 
 			INOUT_FLAG = arrtmpsub[0];
 			MAP_FLAG = arrtmpsub[1];
+			
+			// <BODYBYPASS> 일 경우에 기존 화일에 <BODYBYPASS> 이 있으면 기 존재화일 내용을 그대로 리턴 
+			// 없으면, <BODYBYPASS> 을 기 존재화일 내용에 추가하여 리턴한다.
+			// 만약, <BODYBYPASS> 이 아닌데도 기존 화일에 존재하면 해당 내용을 제거하여 리턴
+			String   fname = "./Response/Tcpmap/" + pApplCode + "_" + pKindCode + "_" + pTxCode ;
+			File f = new File(fname);
+			if (f.exists() && pWork.equals("READ")) {
+				String fileRData = ReadFileData(fname);
+				if (MAP_FLAG.equals("P")) {
+					if (fileRData.indexOf("<BODYBYPASS>") >= 0 ) return fileRData;
+					else return fileRData + "<BODYBYPASS>";
+				}
+				else {
+					if (fileRData.indexOf("<BODYBYPASS>") >= 0 ) {
+						 String[] arrWork = fileRData.split("<BODYBYPASS>");
+						 return arrWork[0];
+					}
+					else  return fileRData;
+				}
+			}
 			if (MAP_FLAG.equals("N")) {
             	return "비정형데이타\t비정형데이타\tCHAR\t10000\t<NODATA>\n";
             }
@@ -2108,10 +2185,10 @@ public class ThreadManagerMainSub extends Thread{
 			}
 			
 			//Mapping 명을 읽어온다.
-			isql = "   select           C.REQ_HEAD_MAPP_CLASS ";
-		      isql = isql + "\n       , C.RES_HEAD_MAPP_CLASS ";
-		      isql = isql + "\n       , A.REQ_BODY_MAPP_CLASS                             ";
-		      isql = isql + "\n       , A.RES_BODY_MAPP_CLASS                             ";
+			isql = "   select           decode(C.REQ_HEAD_MAPP_CLASS,'','<NODATA>', C.REQ_HEAD_MAPP_CLASS) as REQ_HEAD_MAPP_CLASS ";
+		      isql = isql + "\n       , decode(C.RES_HEAD_MAPP_CLASS,'','<NODATA>', C.RES_HEAD_MAPP_CLASS) as RES_HEAD_MAPP_CLASS";
+		      isql = isql + "\n       , decode(A.REQ_BODY_MAPP_CLASS,'','<NODATA>', A.REQ_BODY_MAPP_CLASS) as REQ_BODY_MAPP_CLASS";
+		      isql = isql + "\n       , decode(A.RES_BODY_MAPP_CLASS,'','<NODATA>', A.RES_BODY_MAPP_CLASS) as RES_BODY_MAPP_CLASS";
 		      isql = isql + "\n from ALTX A , ALKIND B , ALAPPL C                         ";
 		      isql = isql + "\n where A.APPL_CODE = '" + pApplCode + "'                   ";
 		      isql = isql + "\n   and A.REP_KIND_CODE = '" + pKindCode + "'               ";
@@ -2286,8 +2363,8 @@ public class ThreadManagerMainSub extends Thread{
             String   HEAD_CLASS_NAME = "";
 
 			//Mapping 명을 읽어온다.
-            isql = "   select  C.REQ_HEAD_MAPP_CLASS ";
-            isql = isql + "\n       , C.RES_HEAD_MAPP_CLASS ";
+			isql = "   select         decode(C.REQ_HEAD_MAPP_CLASS,'','<NODATA>', C.REQ_HEAD_MAPP_CLASS) as REQ_HEAD_MAPP_CLASS";
+		    isql = isql + "\n       , decode(C.RES_HEAD_MAPP_CLASS,'','<NODATA>', C.RES_HEAD_MAPP_CLASS) as RES_HEAD_MAPP_CLASS";
             isql = isql + "\n from  ALAPPL C                                            ";
             isql = isql + "\n where C.APPL_CODE = '" + pApplCode + "'                   ";
             isql = isql + "\n   and C.STA_TYPE = '1'                                    ";
@@ -2394,6 +2471,33 @@ public class ThreadManagerMainSub extends Thread{
 
 		return retdata;
 	}
+	
+    private void Proc_InboundAsyncRes(String pApplCode, String pKindCode, String pTxCode, String pIP)
+    {
+    	String reslinkinfo = Proc_DBSearchResLinkOne(pApplCode + "\t" + pKindCode + "\t" + pTxCode);
+        if (reslinkinfo.trim().equals("") || reslinkinfo.trim().equals("NOT-FOUND")) return;
+    	
+    	String[] arrtmp = reslinkinfo.split("\t");
+    	
+    	
+		SimpleDateFormat formatter = new java.text.SimpleDateFormat("yyyyMMdd", java.util.Locale.KOREA);
+		String iDate = formatter.format(new java.util.Date()); //요청일자
+		
+		formatter = new java.text.SimpleDateFormat("HHmmss", java.util.Locale.KOREA);
+		String iTime = formatter.format(new java.util.Date());  //요청시간
+		
+		String isql = "INSERT INTO TCHECKER_ASYNCINRES(TRAN_DATE,TRAN_TIME,APPL_CODE,KIND_CODE,TX_CODE,IP,SEND_YN) VALUES(  ";
+		isql = isql + "\n '" + iDate + "', ";
+		isql = isql + "\n '" + iTime + "', ";
+		isql = isql + "\n '" + arrtmp[0] + "', ";
+		isql = isql + "\n '" + arrtmp[2] + "', ";
+		isql = isql + "\n '" + arrtmp[4] + "', ";
+		isql = isql + "\n '" + pIP + "', ";
+		isql = isql + "\n 'N') ";
+
+		COMMDATA.GetDBManager().UpdateData(isql);
+		COMMDATA.GetDBManager().ServerDBCommit();
+    }
 	
 	public void CheckLicense()
 	{

@@ -7,6 +7,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketAddress;
@@ -453,7 +455,10 @@ public class TCheckPanelLine {
     			msg = msg + "\n";
     			msg = msg + result.replace("\t", " : ");
     			
-    			JOptionPane.showMessageDialog(null, msg);
+    			DataOutputStream out = new DataOutputStream(new FileOutputStream(new File("./CheckLine.txt")));
+    			out.write(msg.getBytes());
+    			out.close();
+     
     		}
     	}catch(Exception e){}
  	

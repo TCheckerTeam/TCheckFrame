@@ -86,7 +86,8 @@ public class TCheckerMapping {
         RecvMsgMapInfo = LoadMappingMsg(usergongu.GetAPPL_CODE(), usergongu.GetKIND_CODE(), usergongu.GetTX_CODE(), "REQUEST", "READ");
         MakeTreeData(usergongu.GetAPPL_CODE(), usergongu.GetKIND_CODE(), usergongu.GetTX_CODE(), RecvMsgMapInfo, rootrecv);
         MsgBodyRecv = MsgBody;
- 
+        COMMDATA.GetTCheckerLog().WriteLog("D", "TcpManager", "SERVER:" + ResApplCode + ":" + ResKindCode + ":" + ResTxCode + ":MsgBodyRecv[" + MsgBodyRecv + "]");
+        
         //수신한 데이타를 tree에 셋팅한다.
         int idx = 0;
 		final HashMap<String, String> hashinrt = new HashMap<String, String>();
@@ -107,10 +108,13 @@ public class TCheckerMapping {
     	//Anylink로 응답송신할 매핑정보를 읽어온다. 송신전문을 tree에 셋팅한다.
         SendMsgMapInfo = LoadMappingMsg(usergongu.GetAPPL_CODE(), usergongu.GetKIND_CODE(), usergongu.GetTX_CODE(), "RESPONSE", "READ");
         MakeTreeData(usergongu.GetAPPL_CODE(), usergongu.GetKIND_CODE(), usergongu.GetTX_CODE(), SendMsgMapInfo,rootsend);
-        if (Body_ByPass_Flag == true && MsgBody.trim().equals("")) {
+        COMMDATA.GetTCheckerLog().WriteLog("D", "TcpManager", "SERVER:" + ResApplCode + ":" + ResKindCode + ":" + ResTxCode + ":MsgBody[" + MsgBody + "]");
+        
+        if (Body_ByPass_Flag == true && !MsgBody.trim().equals("")) {
         	MsgBodySend = MsgBody;
         }
-    
+        COMMDATA.GetTCheckerLog().WriteLog("D", "TcpManager", "SERVER:" + ResApplCode + ":" + ResKindCode + ":" + ResTxCode + ":MsgBodySend[" + MsgBodySend + "]");
+        
         //SendMsg를 생성한다.
         byte[] makeMsg = MakeSendMsg(usergongu.GetAPPL_CODE(), usergongu.GetKIND_CODE(), usergongu.GetTX_CODE());
         if (makeMsg.length > 10){
@@ -141,6 +145,8 @@ public class TCheckerMapping {
 		String[] arrtmp = TxDetailInfo.split("\n")[0].split("\t");
 		if (arrtmp[1].equals("P")) Body_ByPass_Flag = true;
 
+		COMMDATA.GetTCheckerLog().WriteLog("D", "TcpManager", pApplCode + ":" + pKindCode + ":" + pTxCode + ":" + TxDetailInfo + " --> " + arrtmp[1]);
+				 
 		
     	//Array 및 Struct 에 대한 Work TreeNode 를 선언한다.
     	DefaultMutableTreeNode Array1 = null;
@@ -566,9 +572,13 @@ public class TCheckerMapping {
 		try {
 			MSGDATA = baos.toByteArray();
 			
+			COMMDATA.GetTCheckerLog().WriteLog("D", "TcpManager",  "SERVER:" + pApplCode + ":" + pKindCode + ":" + pTxCode + ":MsgBodySend:" + MsgBodySend);
+			
 			if (Body_ByPass_Flag == true) {
+				COMMDATA.GetTCheckerLog().WriteLog("D", "TcpManager",  "SERVER:" + pApplCode + ":" + pKindCode + ":" + pTxCode + ":MsgBodySend Add:" + MsgBodySend);
 				baos.write(MsgBodySend.getBytes(), 0, MsgBodySend.getBytes().length); 
             	MSGDATA = baos.toByteArray();
+            	COMMDATA.GetTCheckerLog().WriteLog("D", "TcpManager",  "SERVER:" + pApplCode + ":" + pKindCode + ":" + pTxCode + ":MsgBodySend MSGDATA-A:" + new String(MSGDATA));
 			}
 			if (baos != null) baos.close();  //ByteArray close
 			
@@ -586,6 +596,8 @@ public class TCheckerMapping {
             if (COMMDATA.GetCOMM_HEAD_TYPE().equals("0") ){
             	try {
             		HEAD = new byte[Integer.parseInt(COMMDATA.GetCOMM_HEAD_SIZE())];
+            		for(int i = 0;i < HEAD.length;i++) HEAD[i] = (byte)32;
+            		
 	            	if (COMMDATA.GetLEN_TYPE().equals("10")){
 	            		//길이정보가 길이필드 이후의 길이값 : 통신헤더일 경우 메세지의 전체크기를 길이정보로 설정한다.
 		    			String SendLenFmt = String.format("%%0%dd", Integer.parseInt(COMMDATA.GetLEN_SIZE()));
@@ -614,8 +626,8 @@ public class TCheckerMapping {
             	
 	        		byte[] tmpdat = new byte[Integer.parseInt(COMMDATA.GetCOMM_HEAD_SIZE()) + MSGSIZE];
 	        		System.arraycopy(HEAD, 0, tmpdat, 0, HEAD.length);
-	        		
 	        		System.arraycopy(MSGDATA, 0, tmpdat, HEAD.length, MSGDATA.length);
+ 
 	        		return tmpdat;
             	}catch(Exception e1){
             		COMMDATA.GetTCheckerLog().WriteLog("E", "TcpManager", e1);
@@ -959,6 +971,11 @@ public class TCheckerMapping {
 			DataOutputStream out = new DataOutputStream(new FileOutputStream(new File(fname)));
 			out.write(header.getBytes());
 			out.write(SendData.getBytes());
+			
+			if (!MsgBodySend.trim().equals("")){
+				out.write("<BODYBYPASS>".getBytes());
+				out.write(MsgBodySend.getBytes());
+			}
 			out.close();
  	
 			//COMMDATA.GetTCheckerLog().WriteLog("D", "TcpManager", SendData);

@@ -162,6 +162,8 @@ public class DBManager {
 			  
 			  if (isql.indexOf("[NOLOGGING]") >= 0) {
 				  isql = isql.replace("[NOLOGGING]", "");
+				  
+				  //tcheckerlog.WriteLog("D", "DBManager", "[NOLOG]" + isql);
 			  }
 			  else {
 		          tcheckerlog.WriteLog("D", "DBManager", isql);
