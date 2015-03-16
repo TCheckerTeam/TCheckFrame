@@ -1,6 +1,0 @@
-(I) [11:11:50][DBManager.java:60] dbms_driver     = oracle.jdbc.driver.OracleDriver
-(I) [11:11:50][DBManager.java:61] dbms_connection = jdbc:oracle:thin:@121.126.79.29:1521:ORCL
-(I) [11:11:51][DBManager.java:73] dbms is Connectioned
-(I) [11:14:43][DBManager.java:60] dbms_driver     = oracle.jdbc.driver.OracleDriver
-(I) [11:14:43][DBManager.java:61] dbms_connection = jdbc:oracle:thin:@121.126.79.29:1521:ORCL
-(I) [11:14:43][DBManager.java:73] dbms is Connectioned

@@ -1,8 +1,0 @@
-(I) [10:15:13][ThreadUrlMain.java:78] SERVER:NONE:NONE:Execute Thread ThreadInTcp - PORTNO[13521]
-(I) [10:15:13][ThreadUrlMain.java:54] SERVER:NONE:NONE:Execute Thread ThreadInTcp - PORTNO[3521]
-(I) [10:15:13][ThreadUrlMain.java:78] SERVER:NONE:NONE:Execute Thread ThreadInTcp - PORTNO[13522]
-(I) [10:15:13][ThreadUrlMain.java:54] SERVER:NONE:NONE:Execute Thread ThreadInTcp - PORTNO[3522]
-(I) [10:16:16][ThreadUrlMain.java:78] SERVER:NONE:NONE:Execute Thread ThreadInTcp - PORTNO[13521]
-(I) [10:16:16][ThreadUrlMain.java:54] SERVER:NONE:NONE:Execute Thread ThreadInTcp - PORTNO[3521]
-(I) [10:16:16][ThreadUrlMain.java:78] SERVER:NONE:NONE:Execute Thread ThreadInTcp - PORTNO[13522]
-(I) [10:16:16][ThreadUrlMain.java:54] SERVER:NONE:NONE:Execute Thread ThreadInTcp - PORTNO[3522]
