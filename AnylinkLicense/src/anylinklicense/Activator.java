@@ -8,7 +8,7 @@ import org.osgi.framework.BundleContext;
  * Server commit Test 2015.03.13
  * The activator class controls the plug-in life cycle 
  * 
- * 2015.0319 branch Test
+ * 2015.03.19 branch Test
  */
 
 public class Activator extends AbstractUIPlugin {
