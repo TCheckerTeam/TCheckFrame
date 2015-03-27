@@ -51,7 +51,7 @@ public class ThreadUrlMain extends Thread{
 			        			  commdata.SetEBXML_GUBUN (false);
 			        			  if (arrtmp.length > 3) commdata.SetEBXML_GUBUN (true);
 			        			  
-	                              COMMDATA.GetTCheckerLog().WriteLog("I", "UrlManager", "SERVER:NONE:NONE:Execute Thread ThreadInTcp - PORTNO[" + pPortNo + "]");
+	                              COMMDATA.GetTCheckerLog().WriteLog("I", "UrlManager", "SERVER:NONE:NONE:Execute ThreadUrlClient - PORTNO[" + pPortNo + "]");
 	                              threadurlclient = new ThreadUrlClient(commdata);
 	                              threadurlclient.start();
 			        			  
@@ -76,7 +76,7 @@ public class ThreadUrlMain extends Thread{
 			        			  commdata.SetEBXML_GUBUN (false);
 			        			  if (arrtmp.length > 3) commdata.SetEBXML_GUBUN (true);
 			        	 
-	                              COMMDATA.GetTCheckerLog().WriteLog("I", "UrlManager", "SERVER:NONE:NONE:Execute Thread ThreadInTcp - PORTNO[" + pPortNo + "]");
+	                              COMMDATA.GetTCheckerLog().WriteLog("I", "UrlManager", "SERVER:NONE:NONE:Execute ThreadUrlServerMain - PORTNO[" + pPortNo + "]");
 	                              threadurlservermain = new ThreadUrlServerMain(commdata);
 	                              threadurlservermain.start();
 			        			  

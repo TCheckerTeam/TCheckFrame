@@ -67,7 +67,7 @@ public class ThreadUrlClient extends Thread{
 				setThreadSleep(1000);
 				continue;
 			}
- 			
+ 		 
 			for(int i=0;i < filelist.length ;i++){
 				try {
 					//송신할 전문 Read
@@ -84,7 +84,7 @@ public class ThreadUrlClient extends Thread{
 		            if (len <= 10) {
 		            	continue;
 		            }
-		            
+		             
 		            String   strreaddata = new String(ReadData);
 					String[] arrstrreaddata = strreaddata.split("<DATAGUBUN>");
 					String[] arrtmp = arrstrreaddata[0].split("\t");
@@ -93,15 +93,18 @@ public class ThreadUrlClient extends Thread{
 					String   ApplCode = arrtmp[2];
 					String   URL      = arrtmp[3];
     
+				 
 					String[] arrurllist = COMMDATA.GetURL_LIST();
 					for(int x=0;x < arrurllist.length ;x++){
 						String[] arrtmpsub = arrurllist[x].split("\t");
 			 
 						if (arrtmpsub[1].equals(URL)) {
 							if (arrtmpsub[3].trim().equals("")) {
+								 
 								SoapSend(UserID, UserPCIP, ApplCode, URL, arrstrreaddata[1]);
 							}
 							else {
+								 
 								//EBXml 방식은 방카슈랑스  업무에서 기업은행 Style만 적용하며, 그 외에는 추가 패치 형태로 제공하기로 함.  
 				                String   CPAID   = arrtmpsub[3];
 				                String   CPAFrom = arrtmpsub[4];
@@ -460,11 +463,33 @@ public class ThreadUrlClient extends Thread{
             msg.getSOAPHeader().setPrefix("SOAP");
             msg.getSOAPBody().setPrefix("SOAP");
             msg.saveChanges();
+            
+            //Debug - start
+            ByteArrayOutputStream baosA = new ByteArrayOutputStream();
+        	msg.writeTo(baosA);
+        	COMMDATA.GetTCheckerLog().WriteLog("D", "UrlManager", "Send Msg:" + baosA.toString("utf-8"));
+        	baosA.close();
+            //Debug - End
  
             //전문전송 요청
             SOAPConnectionFactory connectionFactory = SOAPConnectionFactory.newInstance();
             SOAPConnection soapConnection = connectionFactory.createConnection();
-            SOAPMessage resmsg = soapConnection.call(msg, pUrl);
+            
+            URL endpoint =
+                    new URL(new URL(pUrl), "",
+                            new URLStreamHandler() {
+                              @Override
+                              protected URLConnection openConnection(URL url) throws IOException {
+                                URL target = new URL(url.toString());
+                                URLConnection connection = target.openConnection();
+                                // Connection settings
+                                connection.setConnectTimeout(3000); // 3 sec
+                                connection.setReadTimeout(5000);  
+                                return(connection);
+                              }
+                            });
+            
+            SOAPMessage resmsg = soapConnection.call(msg, endpoint);
             soapConnection.close();
 
             //수신 응답전문 parsing

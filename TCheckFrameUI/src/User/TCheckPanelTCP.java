@@ -883,7 +883,6 @@ public class TCheckPanelTCP {
     	final HashMap<String, String> hashpermit = new HashMap<String, String>();
 		hashpermit.clear();
 		
-		System.out.println("@@@@@ Init_Tree_TxList Start");
     	String RetPermitTx = Communication("READ_PERMIT", GetRegister("TCHECKER_USERID"));
     	String[] arrRetPermitTx = RetPermitTx.split("\n");
 		for(int k=0;k < arrRetPermitTx.length ;k++){

@@ -374,9 +374,6 @@ public class TCheckPanelSOAP {
         	
         	boolean ApplPermit = false; 
     		String UserPermit = GetRegister("TCHECKER_USERPERMIT");
-    		/* 대주보 관련 권한 설정을 영문으로 수정 */
-//    		if (UserPermit.equals("전체권한")) ApplPermit = true;
-//            if (UserPermit.equals("업무권한")) {
     		
     		if (UserPermit.equals("ALL")) ApplPermit = true;
             if (UserPermit.equals("APPL")) {
