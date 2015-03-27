@@ -70,17 +70,12 @@ public class TCheckerMapping {
     	//공유업무를 점검하고, ApplCode, KindCode, TxCode 를 추출한다.
     	usergongu.SetRECVDATA(pRecvData);
     	
-    	if (GWTrace_Mode.equals("Y")) {
-    		usergongu.SetAPPL_CODE(gApplCode);
-    		usergongu.SetKIND_CODE(gKindCode);
-    		usergongu.SetTX_CODE(gTxCode);
-    	}
-    	else {
-    		usergongu.SetAPPL_CODE(gApplCode);
-    		usergongu.SetKIND_CODE(gKindCode);
-    		usergongu.SetTX_CODE(gTxCode);
-    		usergongu.GetGongUInfo();
-    	}
+ 
+		usergongu.SetAPPL_CODE(gApplCode);
+		usergongu.SetKIND_CODE(gKindCode);
+		usergongu.SetTX_CODE(gTxCode);
+		usergongu.GetGongUInfo();
+  
   
         //Anylink로 부터 받은 데이타에 대한 수신매핑정보를 읽어온다.
         RecvMsgMapInfo = LoadMappingMsg(usergongu.GetAPPL_CODE(), usergongu.GetKIND_CODE(), usergongu.GetTX_CODE(), "REQUEST", "READ");
@@ -522,7 +517,8 @@ public class TCheckerMapping {
 	 
 			int CurOffset = 0;
 			baos = new ByteArrayOutputStream();
-			for(int i=0;i < arrSendData.length ;i++){
+			for(int i=0;i < arrSendData.length ;i++)
+			{
 	            if (arrSendData[i].trim().equals("")) break;
 	            String[] arrtmp = arrSendData[i].split("\t");
 	            

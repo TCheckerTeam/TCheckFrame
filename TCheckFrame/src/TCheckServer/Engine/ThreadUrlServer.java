@@ -33,7 +33,7 @@ public class ThreadUrlServer extends Thread{
     { 
     	COMMDATA = commdata;
     	client   = pSocket;
-
+ 
     }
   
 	public void run()
@@ -43,11 +43,14 @@ public class ThreadUrlServer extends Thread{
         int              recvlen   = 0;
         byte[]           RecvBytes = new byte[100000];
         try{ 
+        	
+        	
             dos = new DataOutputStream(client.getOutputStream());
             dis = new DataInputStream(client.getInputStream());
 
             //데이타수신
             try {
+ 
                 recvlen = 0;
                 client.setSoTimeout(10000);
                 for(int i = 0 ; i < 100000 ;i++){
@@ -57,14 +60,14 @@ public class ThreadUrlServer extends Thread{
                 }
             }catch(Exception e1){}
             
+            
         }catch(IOException e2){
         	COMMDATA.GetTCheckerLog().WriteLog("E", "UrlManager", e2);
             setThreadSleep(100);
             try{ client.close(); }catch(Exception e){}
             return;
         } 
-        
-        
+ 
     	String UrlInfo = Proc_getUrlInfo(RecvBytes);
     	String[] arrUrlInfo = UrlInfo.split("\t");
     	String pApplCode = arrUrlInfo[0];
@@ -419,8 +422,9 @@ public class ThreadUrlServer extends Thread{
 		String[] arrtmpwork = pWorkData.split("\n");
 		for(int i=0;i < arrtmpwork.length;i++){
 			if (arrtmpwork[i].toUpperCase().indexOf("POST") >= 0 && arrtmpwork[i].toUpperCase().indexOf("HTTP") >= 0){
-				String[] arrtmp = arrtmpwork[i].split(" ");
-				pUrl = arrtmp[1];
+				String workstr = arrtmpwork[i].replace("POST ", "").trim();
+				int     httpidx = workstr.toUpperCase().indexOf("HTTP", 10);
+				if (httpidx > 0) pUrl = workstr.substring(0, httpidx).trim();
 				break;
 			}
 		}
@@ -428,6 +432,9 @@ public class ThreadUrlServer extends Thread{
 			COMMDATA.GetTCheckerLog().WriteLog("E", "UrlManager", "SERVER:NONE:NONE:수신된 전문에서 URL 를 추출하지 못하였습니다");
 			return "";
 		}
+		
+		COMMDATA.GetTCheckerLog().WriteLog("I", "UrlManager", "SERVER:NONE:NONE:Search URL=" + pUrl);
+ 
 		
         //회선정보에서 출력회선으로 설정된 회선에 대한 정보를 제외한 회선정보를 읽어온다.
 		/* 대주보 DB2 관련 표준 SQL로 수정
@@ -450,12 +457,19 @@ public class ThreadUrlServer extends Thread{
 		if (retdata == null || retdata.equals("")) {
 			return "";
 		}
-		
+ 
 		String[] arrtmp = retdata.split("\n");
 		String[] arrtmpsub = arrtmp[0].split("\t");
+		
+		if (arrtmpsub.length >= 4) {
+			if (arrtmpsub[3].trim().equals("")) return arrtmpsub[0] + "\tSOAP\t" + pUrl;
+			return arrtmpsub[0] + "\tEBXML\t" + pUrl;
+		}
+		else {
+			return arrtmpsub[0] + "\tSOAP\t" + pUrl;
+		}
   
-		if (arrtmpsub[3].trim().equals("")) return arrtmpsub[0] + "\tSOAP\t" + pUrl;
-		return arrtmpsub[0] + "\tEBXML\t" + pUrl;
+		
 	}
 }
 
