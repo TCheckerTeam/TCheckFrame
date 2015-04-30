@@ -5,6 +5,8 @@ import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedOutputStream;
+import java.io.BufferedInputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.net.InetSocketAddress;
@@ -77,7 +79,7 @@ public class TCheckPanelUser {
         splitPane.setContinuousLayout(true); //연속적인 레이아웃 기능 활성화
         splitPane.setLeftComponent(splitPane1); //좌측 컴포넌트 장착
         splitPane.setRightComponent(splitPane2); //우측 컴포넌트 장착
-        splitPane.setDividerLocation(500); //디바이더(분리대) 위치 설정      
+        splitPane.setDividerLocation(800); //디바이더(분리대) 위치 설정      
         splitPane.setDividerSize(6); //디바이더(분리대) 굵기 설정
         splitPane.setBackground(Color.BLACK);
         
@@ -92,7 +94,7 @@ public class TCheckPanelUser {
 	{
     	// Table Component Setting 
     	final String[] colNames = {"사용자ID","비밀번호","사용자정보","PC IPAddress","권한등급"};
-    	final int[] columnsWidth = {60, 60, 150, 120, 40};
+    	final int[] columnsWidth = {60, 60, 200, 120, 40};
  
     	DefaultTableModel tabModel = new DefaultTableModel(colNames,0);
     	myPaneUserTable = new JTable(tabModel);
@@ -109,13 +111,9 @@ public class TCheckPanelUser {
         	if (i==4) {
         		//매핑구분에 대한 Combo 설정
         		JComboBox combpermit = new JComboBox();
-//        		combpermit.addItem("전체권한");
-//        		combpermit.addItem("업무권한");
-//        		combpermit.addItem("거래권한");
-        		
+ 
         		combpermit.addItem("ALL");
         		combpermit.addItem("APPL");
-        		combpermit.addItem("TX");
  
         		myPaneUserTable.getColumnModel().getColumn(i).setCellEditor(new DefaultCellEditor(combpermit));
         		DefaultTableCellRenderer  renderer = new DefaultTableCellRenderer();
@@ -169,20 +167,16 @@ public class TCheckPanelUser {
 	}
 	private JScrollPane Init_Table_Permit()
 	{
-		 DefaultMutableTreeNode rootNode = new DefaultMutableTreeNode(new myUserPermitComm("aaa", "", "", "", "", "", "",true));  
+		 DefaultMutableTreeNode rootNode = new DefaultMutableTreeNode(new myUserPermitComm("aaa", "",  "",false));  
 		 permitroot = rootNode;
 		 myPanePermitTable = new JXTreeTable();
 		 myPanePermitTable.setTreeTableModel(new myUserPermitModel(rootNode)); 
 		 myPanePermitTable.setEditable(true);
 		 myPanePermitTable.setRootVisible(false);
  
-		 myPanePermitTable.getColumnModel().getColumn(0).setPreferredWidth(100);
-		 myPanePermitTable.getColumnModel().getColumn(1).setPreferredWidth(150);
-		 myPanePermitTable.getColumnModel().getColumn(2).setPreferredWidth(40);
-		 myPanePermitTable.getColumnModel().getColumn(3).setPreferredWidth(150);
-		 myPanePermitTable.getColumnModel().getColumn(4).setPreferredWidth(40);
-		 myPanePermitTable.getColumnModel().getColumn(5).setPreferredWidth(150);
-		 myPanePermitTable.getColumnModel().getColumn(6).setPreferredWidth(40);
+		 myPanePermitTable.getColumnModel().getColumn(0).setPreferredWidth(80);
+		 myPanePermitTable.getColumnModel().getColumn(1).setPreferredWidth(400);
+		 myPanePermitTable.getColumnModel().getColumn(2).setPreferredWidth(80);
   
 		 JScrollPane myPaneSub2 = new JScrollPane(myPanePermitTable);
          myPaneSub2.setAutoscrolls(true);
@@ -263,7 +257,7 @@ public class TCheckPanelUser {
  
     	myPaneSub1.setLayout(new FlowLayout());
  
-    	JLabel tmpLabel = new JLabel(" 허용거래정보              ");
+    	JLabel tmpLabel = new JLabel(" 허용업무정보              ");
     	myPaneSub1.add(tmpLabel);
     	
     	btnRefresh = new JButton("갱신하기",new ImageIcon("./Image/refresh.gif")); 
@@ -292,8 +286,6 @@ public class TCheckPanelUser {
 			        String tmpstr = "";
 			        tmpstr = tmpstr + gSelectedUserID       + "\t";
 			        tmpstr = tmpstr + data.getApplCode()    + "\t"; 
-			        tmpstr = tmpstr + "ALL"                 + "\t";
-			        tmpstr = tmpstr + "ALL"                 + "\t";
 			        
 			        if (data.getPermitFlag().trim().equals("")) {
 			        	tmpstr = tmpstr + "N\n";
@@ -301,18 +293,8 @@ public class TCheckPanelUser {
 			        else {
 			        	tmpstr = tmpstr + data.getPermitFlag()  + "\n";	
 			        }
-			        
-			         
-			        for(int j=0;j < permitroot.getChildAt(i).getChildCount();j++){
-			        	DefaultMutableTreeNode dataNodesub = (DefaultMutableTreeNode) permitroot.getChildAt(i).getChildAt(j);  
-						myUserPermitComm datasub = (myUserPermitComm) dataNodesub.getUserObject();
-						tmpstr = tmpstr + gSelectedUserID          + "\t";
-				        tmpstr = tmpstr + datasub.getApplCode()    + "\t"; 
-				        tmpstr = tmpstr + datasub.getKindCode()    + "\t";
-				        tmpstr = tmpstr + datasub.getTxCode()      + "\t";
-				        tmpstr = tmpstr + datasub.getPermitFlag()  + "\n";
-				        savedata = savedata + tmpstr ;
-			        }
+ 
+			        savedata = savedata + tmpstr ;
 				}
 		        System.out.println(savedata);
 				SaveTcheckerPermitInfo(savedata);
@@ -338,20 +320,13 @@ public class TCheckPanelUser {
  
     	String[] gridData = new String[5];
         String applreslinkinfo = SearchTcheckerUserInfo();
-        
-        System.out.println("1. Read_Data : ["+applreslinkinfo+"]");
-        
+                        
         String[] arrtmp = applreslinkinfo.split("\n");
         
         for(int i=0;i < arrtmp.length ;i++){
         	if (arrtmp[i].trim().equals("")) break;
         	String[] arrtmpsub = arrtmp[i].split("\t");
-        	
-        	for(int s=0; s<arrtmpsub.length; s++){
-        		System.out.println("2. Read_Data : ["+arrtmpsub[s]+"]");
-        	}
-        	
-        	
+        	        	
             gridData[0] = arrtmpsub[0];  //사용자ID
             gridData[1] = arrtmpsub[1];  //비밀번호
             gridData[2] = arrtmpsub[2];  //사용자정보
@@ -378,34 +353,34 @@ public class TCheckPanelUser {
     	String tmpApplName = "";
         String applreslinkinfo = SearchTcheckerPermitInfo(gSelectedUserID);
         String[] arrtmp = applreslinkinfo.split("\n");
+        
         for(int i=0;i < arrtmp.length ;i++){
+        	
         	if (arrtmp[i].trim().equals("")) break;
+        	
         	String[] arrtmpsub = arrtmp[i].split("\t");
  
-            if (!tmpApplName.equals(arrtmpsub[0] + " - " + arrtmpsub[1]))
-            {
-            	if (!tmpApplName.equals("")) permitroot.add(ApplNode);
-            	
-            	//Appl에 대한 권한 정보
-            	String appl_permitflag = "N";
-            	String applreslinkinfoappl = SearchTcheckerPermitInfoAppl(gSelectedUserID);
-            	String[] arrapplreslinkinfoappl = applreslinkinfoappl.split("\n");
-            	for(int j=0;j < arrapplreslinkinfoappl.length ;j++){
-            		String[] arrtmpappl = arrapplreslinkinfoappl[j].split("\t");
-            		if (arrtmpappl[0].equals(arrtmpsub[0])) {
-            			appl_permitflag = arrtmpappl[1];
-            			break;
-            		}
-            	}
-            	
-            	ApplNode = new DefaultMutableTreeNode(new myUserPermitComm(arrtmpsub[0] , arrtmpsub[1], "", "","", "", appl_permitflag, true)); 
-            	tmpApplName = arrtmpsub[0] + " - " + arrtmpsub[1];
-            }
-   
-            ApplNode.add(new DefaultMutableTreeNode(new myUserPermitComm(arrtmpsub[0] , arrtmpsub[1], 
-													            		 arrtmpsub[2] , arrtmpsub[3], 
-													            		 arrtmpsub[4] , arrtmpsub[5],
-													            		 arrtmpsub[6] , false)));      
+         
+        	if (!tmpApplName.equals("")) permitroot.add(ApplNode);
+        	
+        	//Appl에 대한 권한 정보
+//        	String appl_permitflag = "N";
+//        	String applreslinkinfoappl = SearchTcheckerPermitInfoAppl(gSelectedUserID);
+//        	String[] arrapplreslinkinfoappl = applreslinkinfoappl.split("\n");
+//        	for(int j=0;j < arrapplreslinkinfoappl.length ;j++){
+//        		
+//        		System.out.println("Permit 2 : [" + arrapplreslinkinfoappl[j] + "]");
+//        		
+//        		String[] arrtmpappl = arrapplreslinkinfoappl[j].split("\t");
+//        		if (arrtmpappl[0].equals(arrtmpsub[0])) {
+//        			appl_permitflag = arrtmpappl[1];
+//        			break;
+//        		}
+//        	}
+        	//System.out.println("["+i+"] 업무코드 : [" + arrtmpsub[0] + "] 업무명 : [" + arrtmpsub[1] + "] 권한 : [" +  arrtmpsub[2] +"]");
+        	ApplNode = new DefaultMutableTreeNode(new myUserPermitComm(arrtmpsub[0] , arrtmpsub[1],  arrtmpsub[2], false)); 
+        	tmpApplName = arrtmpsub[0] + " - " + arrtmpsub[1];
+             
         }
 	 
         if (ApplNode != null) permitroot.add(ApplNode);
@@ -414,12 +389,8 @@ public class TCheckPanelUser {
  
 	    //컬럼크기 설정
 		myPanePermitTable.getColumnModel().getColumn(0).setPreferredWidth(80);
-		myPanePermitTable.getColumnModel().getColumn(1).setPreferredWidth(150);
+		myPanePermitTable.getColumnModel().getColumn(1).setPreferredWidth(400);
 		myPanePermitTable.getColumnModel().getColumn(2).setPreferredWidth(40);
-		myPanePermitTable.getColumnModel().getColumn(3).setPreferredWidth(150);
-		myPanePermitTable.getColumnModel().getColumn(4).setPreferredWidth(40);
-		myPanePermitTable.getColumnModel().getColumn(5).setPreferredWidth(150);
-		myPanePermitTable.getColumnModel().getColumn(6).setPreferredWidth(40);
  
         
 		//권한(Y/N) 에 대한 랜더링
@@ -427,10 +398,10 @@ public class TCheckPanelUser {
 		combpermit.addItem("Y");
 		combpermit.addItem("N");
 	 
-		myPanePermitTable.getColumnModel().getColumn(6).setCellEditor(new myComboxModel(combpermit) );
+		myPanePermitTable.getColumnModel().getColumn(2).setCellEditor(new myComboxModel(combpermit) );
 		DefaultTableCellRenderer  renderer = new DefaultTableCellRenderer();
 		renderer.setBackground(new Color(217,255,217));
-		myPanePermitTable.getColumnModel().getColumn(6).setCellRenderer(renderer);
+		myPanePermitTable.getColumnModel().getColumn(2).setCellRenderer(renderer);
 		 
     }
  
@@ -508,29 +479,36 @@ public class TCheckPanelUser {
 		Socket one_client = null;
     	DataOutputStream dos = null;
     	DataInputStream dis = null;
+				
     	String recvdata = "";
     	try {
     		
     		one_client = new Socket();
 	        one_client.connect(new InetSocketAddress(GetRegister("TCHECKER_ANYLINKIP"), Integer.parseInt(GetRegister("TCHECKER_ANYLINKPORT"))), 3000);  //3초 기다림
-            one_client.setSoTimeout(5000);
+            one_client.setSoTimeout(60000);
             
-            dos = new DataOutputStream(one_client.getOutputStream());
-            dis = new DataInputStream(one_client.getInputStream());
+            dos = new DataOutputStream(new BufferedOutputStream(one_client.getOutputStream()));
+            dis = new DataInputStream(new BufferedInputStream(one_client.getInputStream()));
+           
             
     		//Send
             senddata = senddata.replace("\r","");
             String cmd = cmdstr + "                                        ";
             String SendStr = String.format("%08d", senddata.getBytes().length) + cmd.substring(0,32) + senddata;
+            
+            System.out.println("PanelUser Communication Send : [" + SendStr + "]");
+            
             dos.write(SendStr.getBytes(), 0, SendStr.getBytes().length);
             dos.flush();
  
-      	    //데이타부 길이정보 읽기
+
+      	    //데이타부 길이정보 읽기           
             int    tmplen = 0;
             byte[] tmpbyte1 = new byte[8];
             try{
                for(int i = 0 ; i < 8 ;i++) {
-            	   tmpbyte1[i] = dis.readByte();  
+            	   tmpbyte1[i] = dis.readByte();
+            	   
             	   tmplen++;
                }
             }catch(Exception e2){}
@@ -550,6 +528,9 @@ public class TCheckPanelUser {
                }
             }catch(Exception e2){}
       	    recvdata = new String(tmpbyte2);
+      	    
+      	    System.out.println("PanelUser Communication Rcv : [" + recvdata + "]");
+      	    
 	        return recvdata;
       
     	}

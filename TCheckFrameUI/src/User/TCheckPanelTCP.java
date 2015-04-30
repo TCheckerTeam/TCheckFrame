@@ -69,8 +69,8 @@ public class TCheckPanelTCP {
    
 	public TCheckPanelTCP(JPanel panel, String pUserID)
 	{
-		mypanel = panel;
 		gUserID = GetRegister("TCHECKER_USERID");
+		mypanel = panel;
 		myPaneGongUInit();
 	}
     public void myPaneGongUInit()
@@ -540,7 +540,7 @@ public class TCheckPanelTCP {
         JMenuItem reqdatainit = new JMenuItem("데이타삭제",new ImageIcon("./Image/datainit.png"));
         JMenuItem reqdatainrt = new JMenuItem("데이타삽입",new ImageIcon("./Image/headerdef.png"));
         JMenuItem reqarrayadd = new JMenuItem("배열크기조정",new ImageIcon("./Image/add_row.png"));
-        JMenuItem reqarraydel = new JMenuItem("항목삭제",new ImageIcon("./Image/delete_row.png"));
+        JMenuItem reqarraydel = new JMenuItem("구조체삭제",new ImageIcon("./Image/delete_row.png"));
         JMenuItem reqdatauser = new JMenuItem("사용자정의",new ImageIcon("./Image/headerdef.png"));
         
     	popupreq.add(reqjumninit);
@@ -637,7 +637,7 @@ public class TCheckPanelTCP {
             	
     	reqdatauser.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae){
-				DataInsertDialog datains = new DataInsertDialog(200,200,600,350,"사용자편집 요청전문 정보를 입력하세요.");
+                DataInsertDialog datains = new DataInsertDialog(200,200,600,350,"사용자편집 요청전문 정보를 입력하세요.(Tab으로 구분 : 한글명/영문명/타입/길이)");
 				
 				if (datains.getInData().equals("")) return;
 				
@@ -694,7 +694,7 @@ public class TCheckPanelTCP {
         JMenuItem resdatainit = new JMenuItem("데이타삭제",new ImageIcon("./Image/datainit.png"));
         JMenuItem resdatainrt = new JMenuItem("데이타삽입",new ImageIcon("./Image/headerdef.png"));
         JMenuItem resarrayadd = new JMenuItem("배열크기조정",new ImageIcon("./Image/add_row.png"));
-        JMenuItem resarraydel = new JMenuItem("항목삭제",new ImageIcon("./Image/delete_row.png"));
+        JMenuItem resarraydel = new JMenuItem("구조체삭제",new ImageIcon("./Image/delete_row.png"));
         JMenuItem resjumninfo = new JMenuItem("응답전문 정보보기",new ImageIcon("./Image/property.gif"));
         JMenuItem reswireless = new JMenuItem("무선네트워크 응답확인",new ImageIcon("./Image/resmap.gif"));
         JMenuItem resdatauser = new JMenuItem("사용자정의",new ImageIcon("./Image/headerdef.png"));
@@ -838,7 +838,7 @@ public class TCheckPanelTCP {
     	resdatauser.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae){
 				int left_width  = rect.width / 100 * 50;
-				DataInsertDialog datains = new DataInsertDialog(200,200,600,350, "사용자편집 응답전문 정보를 입력하세요.");
+				DataInsertDialog datains = new DataInsertDialog(200,200,600,350, "사용자편집 응답전문 정보를 입력하세요.(Tab으로 구분 : 한글명/영문명/타입/길이)");
 				
 				if (datains.getInData().equals("")) return;
 				
@@ -871,59 +871,19 @@ public class TCheckPanelTCP {
 	private JScrollPane Init_Tree_TxList(String pGubun)
 	{
 		JTree  xTreeMain = null;
-		DefaultMutableTreeNode root, nodemain  = null, nodeappl = null, nodekind = null, nodetx = null;
+		DefaultMutableTreeNode root, nodemain  = null, nodeappl = null;
 		String oldmain = "";
 		String oldappl = "";
-        String oldkind = "";
         String pApplCode = ""; 
-        String pKindCode = "";
-        String pTxCode   = "";
-        
-        //거래권한일 경우에 사용하기 위해서 업무+종별+거래에 대한 permit 정보 을 hash에 저장한다.
-    	final HashMap<String, String> hashpermit = new HashMap<String, String>();
-		hashpermit.clear();
-		
-    	String RetPermitTx = Communication("READ_PERMIT", GetRegister("TCHECKER_USERID"));
-    	String[] arrRetPermitTx = RetPermitTx.split("\n");
-		for(int k=0;k < arrRetPermitTx.length ;k++){
-			String[] arrtmppermit = arrRetPermitTx[k].split("\t");
-			hashpermit.put(arrtmppermit[0]+"\t"+ arrtmppermit[2]+"\t"+arrtmppermit[4], arrtmppermit[6]);
-		}
-		
-       
+ 
         root = new DefaultMutableTreeNode("요청 및 응답 업무목록");
-        String ApplTxList = GetInOutBoundTcp();
+        String ApplTxList = GetInOutTcpAppl(gUserID);
         String[] arrApplTxList = ApplTxList.split("\n");
         for(int i=0;i < arrApplTxList.length ;i++){
         	if (arrApplTxList[i].trim().equals("")) break;
         	String[] arrtmpApplTxListSub = arrApplTxList[i].split("\t");
     		pApplCode = arrtmpApplTxListSub[1];
-    		pKindCode = arrtmpApplTxListSub[3];
-    		pTxCode   = arrtmpApplTxListSub[5];
-    		
- 
-        	boolean ApplPermit = false;
-    		String UserPermit = GetRegister("TCHECKER_USERPERMIT");
-    		/* 대주보 관련 권한 설정을 영문으로 수정 */
-//    		if (UserPermit.equals("전체권한")) ApplPermit = true;
-//            if (UserPermit.equals("업무권한")) {
-    		
-    		if (UserPermit.equals("ALL")) ApplPermit = true;
-            if (UserPermit.equals("APPL")) {
-            	String RetPermitAppl = Communication("READ_PERMITAPPL", GetRegister("TCHECKER_USERID"));
-            	if (!RetPermitAppl.trim().equals("") && !RetPermitAppl.trim().equals("NOT-FOUND")) {
-            		String[] arrtmp = RetPermitAppl.split("\n");
-            		for(int k=0;k < arrtmp.length ;k++){
-            			String[] arrtmppermit = arrtmp[k].split("\t");
-            			if (arrtmppermit[0].equals(pApplCode)  ) {
-            				if (arrtmppermit[1].equals("Y")) ApplPermit = true;
-            				break;
-            			}
-            		}
-            	}
-    		}
- 
-            System.out.println("arrtmpApplTxListSub[0] = " + arrtmpApplTxListSub[0] );
+  
         	if (!oldmain.equals(arrtmpApplTxListSub[0])) {
         		//root
         		if (arrtmpApplTxListSub[0].equals("I") ) {
@@ -940,17 +900,11 @@ public class TCheckPanelTCP {
         			System.out.println("arrtmpApplTxListSub[0]=N SKIP");
         			continue;
         		}
-        		
  
         		//appl
         		nodeappl = new DefaultMutableTreeNode(arrtmpApplTxListSub[1] + " - " + arrtmpApplTxListSub[2]);
         		oldappl = arrtmpApplTxListSub[1];
         		nodemain.add(nodeappl);
- 
-        		//kind
-        		nodekind = new DefaultMutableTreeNode(arrtmpApplTxListSub[3] + " - " + arrtmpApplTxListSub[4]);
-        		oldkind = arrtmpApplTxListSub[3];
-        		nodeappl.add(nodekind);
  
         	}
         	if (!oldappl.equals(arrtmpApplTxListSub[1])) {
@@ -959,37 +913,7 @@ public class TCheckPanelTCP {
         		nodeappl = new DefaultMutableTreeNode(arrtmpApplTxListSub[1] + " - " + arrtmpApplTxListSub[2]);
         		oldappl = arrtmpApplTxListSub[1];
         		nodemain.add(nodeappl);
- 
-        		//kind
-        		nodekind = new DefaultMutableTreeNode(arrtmpApplTxListSub[3] + " - " + arrtmpApplTxListSub[4]);
-        		oldkind = arrtmpApplTxListSub[3];
-        		nodeappl.add(nodekind);
- 
         	}
-        	
-        	//kind
-        	if (!oldkind.equals(arrtmpApplTxListSub[3])) {
- 
-        		nodekind = new DefaultMutableTreeNode(arrtmpApplTxListSub[3] + " - " + arrtmpApplTxListSub[4]);
-        		oldkind = arrtmpApplTxListSub[3];
-        		nodeappl.add(nodekind);
-        	}
-        	
-        	if (ApplPermit == true) {
-        		//전체권한, 업무권한 제어
-                nodetx = new DefaultMutableTreeNode(arrtmpApplTxListSub[5] + " - " + arrtmpApplTxListSub[6]);
-            	nodekind.add(nodetx);
-        	}
-        	else {
-        		//거래권한 제어
-        		String yn = hashpermit.get(pApplCode + "\t" + pKindCode + "\t" + pTxCode);
-        		if (yn == null) yn = "N";
-        		if (yn.equals("Y")){
-                    nodetx = new DefaultMutableTreeNode(arrtmpApplTxListSub[5] + " - " + arrtmpApplTxListSub[6]);
-                	nodekind.add(nodetx);
-        		}
-        	}
- 
         }
        
         xTreeMain = new JTree(root);
@@ -1009,6 +933,36 @@ public class TCheckPanelTCP {
                             	tmpapplgubun = arrtmp[1];
                             	gApplCode = arrtmp[2].split("-")[0].trim();
                             	
+                            	DefaultMutableTreeNode selectedNode=(DefaultMutableTreeNode)e.getPath().getLastPathComponent();
+                            	if (selectedNode.getChildCount() == 0){
+                            		String tmpkindtxlist = "";
+                            		if (tmpapplgubun.trim().equals("요청업무"))  tmpkindtxlist = GetInOutKindTxList(gApplCode, "I");
+                            		if (tmpapplgubun.trim().equals("응답업무"))  tmpkindtxlist = GetInOutKindTxList(gApplCode, "O");
+                            		String[] arrtmpkindtxlist = tmpkindtxlist.split("\n");
+                            		
+                            		String oldkind = "";
+                            		DefaultMutableTreeNode nodekind = null;
+                            		
+                            		for(int i=0;i < arrtmpkindtxlist.length ;i++){
+                            			if (arrtmpkindtxlist[i].trim().equals("")) break;
+                            			
+                            			System.out.println(" 종별 거래 : ["+arrtmpkindtxlist[i]+"]");
+                            			
+                            			String[] arrtmpApplTxListSub = arrtmpkindtxlist[i].split("\t");
+                            			
+                            			//종별 2번 찍히는 현상에 대한 수정
+                            			System.out.println("oldKind : ["+oldkind+"] arrtmpApplTxListSub : ["+arrtmpApplTxListSub[0].trim()+"]");
+                            			if (!oldkind.equals(arrtmpApplTxListSub[0].trim())) {
+                            				//kind
+                                    		nodekind = new DefaultMutableTreeNode(arrtmpApplTxListSub[0] + " - " +arrtmpApplTxListSub[1]);
+                                    		oldkind = arrtmpApplTxListSub[0];
+                            			}
+                            			DefaultMutableTreeNode nodetx = new DefaultMutableTreeNode(arrtmpApplTxListSub[2] + " - " +arrtmpApplTxListSub[3]);
+                                    	nodekind.add(nodetx);
+                                    	selectedNode.add(nodekind);
+                            		}
+                            	}
+ 
                                 roottcpreq.removeAllChildren();
                                 roottcpres.removeAllChildren();
                                 myPaneTcpReqTable.updateUI();
@@ -1072,7 +1026,7 @@ public class TCheckPanelTCP {
     			    				if (combSendPort.getItemAt(k).equals(arrtportlist[i])) continue;
     			    			}
     			    		    combSendPort.addItem(arrtportlist[i]);
-    			    		    if (tmpSendPortOld.equals(tmpSendPortOld)) ExistFG = true;
+    			    		    if (tmpSendPortOld != null && tmpSendPortOld.equals(tmpSendPortOld)) ExistFG = true;
         			    	}
         			     
         			    	combSendPort.addItem("매퍼전송");
@@ -1274,14 +1228,16 @@ public class TCheckPanelTCP {
 	    	
 		}
 		if (pInOut.equals("RESPONSE")) {
-			//해당 업무/종별/거래에 대한 응답전문 화일을 읽는다.
-			//만약, 있으면 응답전문 저장 버튼을 이용해서 저장된 화일이므로 바로 화면에 보여준다.
-			String DataRes = Communication("READ_TCPMSGRES_FILE", gApplCode + "\t" + gKindCode + "\t" + gTxCode + "\t" + pWork );
-			if (!DataRes.trim().equals("") && !DataRes.trim().equals("NOT-FOUND")) {
-				myPaneTableTcpRefresh(myPaneTcpResTable, roottcpres, DataRes);
-				return;
+			if (!pWork.equals("INIT")) {
+				//해당 업무/종별/거래에 대한 응답전문 화일을 읽는다.
+				//만약, 있으면 응답전문 저장 버튼을 이용해서 저장된 화일이므로 바로 화면에 보여준다.
+				String DataRes = Communication("READ_TCPMSGRES_FILE", gApplCode + "\t" + gKindCode + "\t" + gTxCode + "\t" + pWork );
+				if (!DataRes.trim().equals("") && !DataRes.trim().equals("NOT-FOUND")) {
+					myPaneTableTcpRefresh(myPaneTcpResTable, roottcpres, DataRes);
+					return;
+				}
 			}
-			
+ 
 			//해당 업무/종별/거래에 대한 응답전문 화일이 없고, 최초 Load한 응답전문에 대하여 초기화된 전문을 가져온다.
 			//만약, 응답매핑이 되여 있는 경우에는 응답매핑 업무/종별/거래에 대하여 저장된 요청전문을 읽어온다.
 			String RetData = "";
@@ -1304,9 +1260,17 @@ public class TCheckPanelTCP {
 		}
 	}
  
-	private String GetInOutBoundTcp()
+	private String GetInOutTcpAppl(String pApplCode)
 	{
-    	String RetData = Communication("READ_INOUTTXTCP", "NODATA");
+    	String RetData = Communication("USER_INOUTTCPAPPL",  pApplCode);
+    	if (RetData.trim().equals("ERROR") || RetData.trim().equals("") || RetData.trim().equals("NOT-FOUND")) {
+    		return "";
+    	}	
+        return RetData;
+	}
+	private String GetInOutKindTxList(String pApplCode, String pInOutFlag)
+	{
+    	String RetData = Communication("USER_KINDTXLIST",  pApplCode + "\t" + pInOutFlag );
     	if (RetData.trim().equals("ERROR") || RetData.trim().equals("") || RetData.trim().equals("NOT-FOUND")) {
     		return "";
     	}	
@@ -1322,7 +1286,7 @@ public class TCheckPanelTCP {
     	try {
     		one_client = new Socket();
 	        one_client.connect(new InetSocketAddress(GetRegister("TCHECKER_ANYLINKIP"), Integer.parseInt(GetRegister("TCHECKER_ANYLINKPORT"))), 3000);  //3초 기다림
-            one_client.setSoTimeout(5000);
+            one_client.setSoTimeout(60000);
             
             dos = new DataOutputStream(one_client.getOutputStream());
             dis = new DataInputStream(one_client.getInputStream());
@@ -1331,6 +1295,9 @@ public class TCheckPanelTCP {
             senddata = senddata.replace("\r","");
             String cmd = cmdstr + "                                        ";
             String SendStr = String.format("%08d", senddata.getBytes().length) + cmd.substring(0,32) + senddata;
+            
+            System.out.println("PanelTCP Communication Send : [" + SendStr + "]");
+            
             dos.write(SendStr.getBytes(), 0, SendStr.getBytes().length);
             dos.flush();
  
@@ -1359,6 +1326,9 @@ public class TCheckPanelTCP {
                }
             }catch(Exception e2){}
       	    recvdata = new String(tmpbyte2);
+      	    
+      	    System.out.println("PanelTCP Communication Rcv : [" + recvdata + "]");
+      	  
 	        return recvdata;
       
     	}

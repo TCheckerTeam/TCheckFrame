@@ -51,11 +51,14 @@ public class TCheckPanelSOAP {
 	private JPopupMenu popupreq = new JPopupMenu();
 	private JPopupMenu popupres = new JPopupMenu();
 	private JButton btnSend, btnressave ;
+	private String gUserID = "";
 	
 	public TCheckPanelSOAP(JPanel panel, String pUserID)
 	{
+		gUserID = GetRegister("TCHECKER_USERID");
 		mypanel = panel;
 		myPaneGongUInit();
+		
 	}
     public void myPaneGongUInit()
     {
@@ -341,76 +344,41 @@ public class TCheckPanelSOAP {
 	}
 	private JScrollPane Init_Tree(String pGubun)
 	{
-	    JTree  xTree = null;
-		DefaultMutableTreeNode root, nodemain  = null, nodeappl = null, nodekind = null, nodetx = null;
+		JTree  xTreeMain = null;
+		DefaultMutableTreeNode root, nodemain  = null, nodeappl = null;
 		String oldmain = "";
 		String oldappl = "";
-        String oldkind = "";
-        String pApplCode = "";
-        String pKindCode = "";
-        String pTxCode   = "";
-        
-        //거래권한일 경우에 사용하기 위해서 업무+종별+거래에 대한 permit 정보 을 hash에 저장한다.
-    	final HashMap<String, String> hashpermit = new HashMap<String, String>();
-		hashpermit.clear();
-		
-    	String RetPermitTx = Communication("READ_PERMIT", GetRegister("TCHECKER_USERID"));
-    	String[] arrRetPermitTx = RetPermitTx.split("\n");
-		for(int k=0;k < arrRetPermitTx.length ;k++){
-			String[] arrtmppermit = arrRetPermitTx[k].split("\t");
-			hashpermit.put(arrtmppermit[0]+"\t"+ arrtmppermit[2]+"\t"+arrtmppermit[4], arrtmppermit[6]);
-		}
-		
-       
+        String pApplCode = ""; 
+ 
         root = new DefaultMutableTreeNode("요청 및 응답 업무목록");
-        String ApplTxList = GetApplTxListInfo();
+        String ApplTxList = GetInOutUrlAppl(gUserID);
         String[] arrApplTxList = ApplTxList.split("\n");
         for(int i=0;i < arrApplTxList.length ;i++){
         	if (arrApplTxList[i].trim().equals("")) break;
         	String[] arrtmpApplTxListSub = arrApplTxList[i].split("\t");
     		pApplCode = arrtmpApplTxListSub[1];
-    		pKindCode = arrtmpApplTxListSub[3];
-    		pTxCode   = arrtmpApplTxListSub[5];
-        	
-        	boolean ApplPermit = false; 
-    		String UserPermit = GetRegister("TCHECKER_USERPERMIT");
-    		
-    		if (UserPermit.equals("ALL")) ApplPermit = true;
-            if (UserPermit.equals("APPL")) {
-            	String RetPermitAppl = Communication("READ_PERMITAPPL", GetRegister("TCHECKER_USERID"));
-            	if (!RetPermitAppl.trim().equals("") && !RetPermitAppl.trim().equals("NOT-FOUND")) {
-            		String[] arrtmp = RetPermitAppl.split("\n");
-            		for(int k=0;k < arrtmp.length ;k++){
-            			String[] arrtmppermit = arrtmp[k].split("\t");
-            			if (arrtmppermit[0].equals(pApplCode)  ) {
-            				if (arrtmppermit[1].equals("Y")) ApplPermit = true;
-            				break;
-            			}
-            		}
-            	}
-    		}
- 
+  
         	if (!oldmain.equals(arrtmpApplTxListSub[0])) {
         		//root
-        		if (arrtmpApplTxListSub[0].equals("1")) {
+        		if (arrtmpApplTxListSub[0].equals("I") ) {
         			nodemain = new DefaultMutableTreeNode("요청업무");
             		oldmain = arrtmpApplTxListSub[0];
             		root.add(nodemain);
             	}
-        		if (arrtmpApplTxListSub[0].equals("2")) {
+        		if (arrtmpApplTxListSub[0].equals("O") ) {
             		nodemain = new DefaultMutableTreeNode("응답업무");
             		oldmain = arrtmpApplTxListSub[0];
             		root.add(nodemain);
             	}
+        		if (arrtmpApplTxListSub[0].equals("N") ) {
+        			System.out.println("arrtmpApplTxListSub[0]=N SKIP");
+        			continue;
+        		}
+ 
         		//appl
         		nodeappl = new DefaultMutableTreeNode(arrtmpApplTxListSub[1] + " - " + arrtmpApplTxListSub[2]);
         		oldappl = arrtmpApplTxListSub[1];
         		nodemain.add(nodeappl);
- 
-        		//kind
-        		nodekind = new DefaultMutableTreeNode(arrtmpApplTxListSub[3] + " - " + arrtmpApplTxListSub[4]);
-        		oldkind = arrtmpApplTxListSub[3];
-        		nodeappl.add(nodekind);
  
         	}
         	if (!oldappl.equals(arrtmpApplTxListSub[1])) {
@@ -419,41 +387,11 @@ public class TCheckPanelSOAP {
         		nodeappl = new DefaultMutableTreeNode(arrtmpApplTxListSub[1] + " - " + arrtmpApplTxListSub[2]);
         		oldappl = arrtmpApplTxListSub[1];
         		nodemain.add(nodeappl);
- 
-        		//kind
-        		nodekind = new DefaultMutableTreeNode(arrtmpApplTxListSub[3] + " - " + arrtmpApplTxListSub[4]);
-        		oldkind = arrtmpApplTxListSub[3];
-        		nodeappl.add(nodekind);
- 
         	}
-        	
-        	//kind
-        	if (!oldkind.equals(arrtmpApplTxListSub[3])) {
- 
-        		nodekind = new DefaultMutableTreeNode(arrtmpApplTxListSub[3] + " - " + arrtmpApplTxListSub[4]);
-        		oldkind = arrtmpApplTxListSub[3];
-        		nodeappl.add(nodekind);
-        	}
-        	
-        	if (ApplPermit == true) {
-        		//전체권한, 업무권한 제어
-                nodetx = new DefaultMutableTreeNode(arrtmpApplTxListSub[5] + " - " + arrtmpApplTxListSub[6]);
-            	nodekind.add(nodetx);
-        	}
-        	else {
-        		//거래권한 제어
-        		String yn = hashpermit.get(pApplCode + "\t" + pKindCode + "\t" + pTxCode);
-        		if (yn == null) yn = "N";
-        		if (yn.equals("Y")){
-                    nodetx = new DefaultMutableTreeNode(arrtmpApplTxListSub[5] + " - " + arrtmpApplTxListSub[6]);
-                	nodekind.add(nodetx);
-        		}
-        	}
- 
         }
        
-        xTree = new JTree(root);
-        xTree.addTreeSelectionListener( new TreeSelectionListener()
+        xTreeMain = new JTree(root);
+        xTreeMain.addTreeSelectionListener( new TreeSelectionListener()
                 {
                     public void valueChanged(TreeSelectionEvent e) {
                     	    String tmpapplgubun = "";
@@ -470,6 +408,32 @@ public class TCheckPanelSOAP {
                             if (arrtmp.length == 3) {
                             	tmpapplgubun = arrtmp[1];
                             	gApplCode  = arrtmp[2].split("-")[0].trim();
+                            	
+                            	DefaultMutableTreeNode selectedNode=(DefaultMutableTreeNode)e.getPath().getLastPathComponent();
+                            	if (selectedNode.getChildCount() == 0){
+                            		String tmpkindtxlist = "";
+                            		if (tmpapplgubun.trim().equals("요청업무"))  tmpkindtxlist = GetInOutKindTxList(gApplCode, "I");
+                            		if (tmpapplgubun.trim().equals("응답업무"))  tmpkindtxlist = GetInOutKindTxList(gApplCode, "O");
+                            		String[] arrtmpkindtxlist = tmpkindtxlist.split("\n");
+                            		
+                            		String oldkind = "";
+                            		DefaultMutableTreeNode nodekind = null;
+                            		
+                            		for(int i=0;i < arrtmpkindtxlist.length ;i++){
+                            			if (arrtmpkindtxlist[i].trim().equals("")) break;
+                            			
+                            			String[] arrtmpApplTxListSub = arrtmpkindtxlist[i].split("\t");
+                            			if (!oldkind.equals(arrtmpApplTxListSub[0])) {
+                            				//kind
+                                    		nodekind = new DefaultMutableTreeNode(arrtmpApplTxListSub[0] + " - " +arrtmpApplTxListSub[1]);
+                                    		oldkind = arrtmpApplTxListSub[0];
+                            			}
+                            			DefaultMutableTreeNode nodetx = new DefaultMutableTreeNode(arrtmpApplTxListSub[2] + " - " +arrtmpApplTxListSub[3]);
+                                    	nodekind.add(nodetx);
+                                    	selectedNode.add(nodekind);
+                            		}
+                            	}
+                            	
                             	RefreshURLList(gApplCode, tmpapplgubun);
                             }
                             if (arrtmp.length == 4) {
@@ -508,9 +472,9 @@ public class TCheckPanelSOAP {
                     }
                 }
         );
-        xTree.expandRow(1);
-    
-        JScrollPane myPaneSubtree1 = new JScrollPane(xTree);
+        xTreeMain.expandRow(1);
+     
+        JScrollPane myPaneSubtree1 = new JScrollPane(xTreeMain);
         myPaneSubtree1.setAutoscrolls(true);
   
 
@@ -530,7 +494,7 @@ public class TCheckPanelSOAP {
         	splitPane.updateUI();
         }
         
-        xTree.addMouseListener(new MouseAdapter(){
+        xTreeMain.addMouseListener(new MouseAdapter(){
     		public void mouseClicked(MouseEvent e){
     			if (e.getButton() == 3) {
     				popuptree.show(splitPane, e.getX(), e.getY());
@@ -540,19 +504,23 @@ public class TCheckPanelSOAP {
         
         return myPaneSubtree1;
 	}
-    private String GetApplTxListInfo()
-    {
-    	try {
-    		String RetData = Communication("READ_INOUTTXURL", "NODATA");
-        	if (RetData.trim().equals("") || RetData.trim().equals("NOT-FOUND")) {
-        		return "";
-        	}
-        	return RetData;
-    	}catch(Exception e) { 
+ 
+	private String GetInOutUrlAppl(String pApplCode)
+	{
+    	String RetData = Communication("USER_INOUTURLAPPL",  pApplCode);
+    	if (RetData.trim().equals("ERROR") || RetData.trim().equals("") || RetData.trim().equals("NOT-FOUND")) {
     		return "";
-    	}
-    	
-    }
+    	}	
+        return RetData;
+	}
+	private String GetInOutKindTxList(String pApplCode, String pInOutFlag)
+	{
+    	String RetData = Communication("USER_KINDTXLIST",  pApplCode + "\t" + pInOutFlag );
+    	if (RetData.trim().equals("ERROR") || RetData.trim().equals("") || RetData.trim().equals("NOT-FOUND")) {
+    		return "";
+    	}	
+        return RetData;
+	}
  
 	private void RefreshURLList(String pApplCode, String pInOut)
 	{
@@ -587,7 +555,7 @@ public class TCheckPanelSOAP {
     	try {
     		one_client = new Socket();
 	        one_client.connect(new InetSocketAddress(GetRegister("TCHECKER_ANYLINKIP"), Integer.parseInt(GetRegister("TCHECKER_ANYLINKPORT"))), 3000);  //3초 기다림
-            one_client.setSoTimeout(5000);
+            one_client.setSoTimeout(60000);
             
             dos = new DataOutputStream(one_client.getOutputStream());
             dis = new DataInputStream(one_client.getInputStream());
@@ -596,6 +564,9 @@ public class TCheckPanelSOAP {
             senddata = senddata.replace("\r","");
             String cmd = cmdstr + "                                        ";
             String SendStr = String.format("%08d", senddata.getBytes().length) + cmd.substring(0,32) + senddata;
+            
+            System.out.println("PanelSOAP Communication Send : [" + SendStr + "]");
+            
             dos.write(SendStr.getBytes(), 0, SendStr.getBytes().length);
             dos.flush();
  
@@ -624,6 +595,9 @@ public class TCheckPanelSOAP {
                }
             }catch(Exception e2){}
       	    recvdata = new String(tmpbyte2);
+      	    
+      	    System.out.println("PanelSOAP Communication Rcv : [" + recvdata + "]");
+      	  
 	        return recvdata;
       
     	}

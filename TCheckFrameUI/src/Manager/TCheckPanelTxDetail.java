@@ -16,7 +16,6 @@ import java.util.prefs.Preferences;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
-import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -34,7 +33,6 @@ import org.jdesktop.swingx.JXTreeTable;
 import Manager.DataModel.myComboxModel;
 import Manager.DataModel.myTxDetailComm;
 import Manager.DataModel.myTxDetailModel;
-import User.DataModel.myTcpMapComm;
 
  
 public class TCheckPanelTxDetail { 
@@ -90,8 +88,7 @@ public class TCheckPanelTxDetail {
         root = new DefaultMutableTreeNode("업무정보");
         String applinfo = GetApplInfo();
         
-        System.out.println(" 업무정보 로딩 : ["+applinfo+"]");
-        
+ 
         String[] arrtmp = applinfo.split("\n");
         for(int i=0;i < arrtmp.length ;i++){
         	if (arrtmp[i].trim().equals("")) break;
@@ -119,18 +116,19 @@ public class TCheckPanelTxDetail {
 	{
     	//상위 Command Button 설정
     	JPanel myPaneSub1  = new JPanel(); myPaneSub1.setBackground(Color.WHITE);
-    	JButton  btnSave, btnRefresh, btnExternal, btnInternal;
+    	JButton  btnSave, btnRefresh, btnExternal, btnInternal, btnUserHead;
 
     	
-    	myPaneSub1.setLayout(new FlowLayout());
- 
-    	
+    	myPaneSub1.setLayout(null);
+  
     	btnRefresh = new JButton("갱신하기",new ImageIcon("./Image/refresh.gif")); 
     	myPaneSub1.add(btnRefresh);
     	mypanel.add(myPaneSub1,BorderLayout.NORTH);
     	btnRefresh.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent ae){
-				Init_Tree();
+				//Init_Tree();
+				myPaneTableRefresh(SelectedApplcode);
+				
     		}
        	});
     	
@@ -147,8 +145,7 @@ public class TCheckPanelTxDetail {
 				{
 					  DefaultMutableTreeNode dataNode = (DefaultMutableTreeNode) permitroot.getChildAt(i);  
 					  myTxDetailComm data = (myTxDetailComm) dataNode.getUserObject();  
-		 
-		  
+ 
 			          String tmpstr = SelectedApplcode + "\t";
 			          tmpstr = tmpstr + data.getKindCode()               + "\t"; 
 			          tmpstr = tmpstr + data.getKindName()               + "\t";
@@ -196,7 +193,7 @@ public class TCheckPanelTxDetail {
     		}
        	});
     
-    	btnExternal = new JButton("키정보-External 기본설정",new ImageIcon("./Image/refresh.gif")); 
+    	btnExternal = new JButton("키정보-External 기본설정"); 
     	myPaneSub1.add(btnExternal);
     	mypanel.add(myPaneSub1,BorderLayout.NORTH);
     	btnExternal.addActionListener(new ActionListener(){
@@ -255,7 +252,7 @@ public class TCheckPanelTxDetail {
     		}
        	});
     	
-    	btnInternal = new JButton("키정보-Internal 기본설정",new ImageIcon("./Image/refresh.gif")); 
+    	btnInternal = new JButton("키정보-Internal 기본설정"); 
     	myPaneSub1.add(btnInternal);
     	mypanel.add(myPaneSub1,BorderLayout.NORTH);
     	btnInternal.addActionListener(new ActionListener(){
@@ -289,6 +286,32 @@ public class TCheckPanelTxDetail {
 				
     		}
        	});
+    	
+    	
+    	btnUserHead = new JButton("사용자헤더 설정"); 
+    	myPaneSub1.add(btnUserHead);
+    	mypanel.add(myPaneSub1,BorderLayout.NORTH);
+    	btnUserHead.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent ae){
+				
+				//String readUserHeader = LoadUserHeaderMsg();
+				
+				if(SelectedApplcode.equals("")){
+					JOptionPane.showMessageDialog(null,"업무정보가 선택되지 않았습니다.");
+				}else{
+				
+					DataMultiDialog datains = new DataMultiDialog(300,200,650,350,"편집할 사용자 Header 정보를 입력하세요.(Tab으로 구분 : 한글명/영문명/타입/길이)", SelectedApplcode);
+				}
+    		}
+       	});
+    	
+    	int baseleft = 50;
+    	btnRefresh.setBounds(baseleft + 10,10,110,25);
+    	btnSave.setBounds(baseleft + 130,10,110,25);
+    	btnExternal.setBounds(baseleft + 250,10,180,25);
+    	btnInternal.setBounds(baseleft + 440,10,180,25);
+    	btnUserHead.setBounds(baseleft + 630,10,150,25);
+    	
     	
     	return myPaneSub1;
 	}
@@ -692,8 +715,6 @@ public class TCheckPanelTxDetail {
     	try {
     		String RetData = Communication("READ_APPLINFO", "NODATA");
     		
-    		System.out.println("업무정보 GetApplInfo : ["+RetData+"]");
-    		
         	if (RetData.trim().equals("") || RetData.trim().equals("NOT-FOUND")) {
         		JOptionPane.showMessageDialog(null,"업무정보를 가져오지 못했습니다.");
         		return "";
@@ -871,15 +892,19 @@ public class TCheckPanelTxDetail {
     	try {
     		one_client = new Socket();
 	        one_client.connect(new InetSocketAddress(GetRegister("TCHECKER_ANYLINKIP"), Integer.parseInt(GetRegister("TCHECKER_ANYLINKPORT"))), 3000);  //3초 기다림
-            one_client.setSoTimeout(5000);
+            one_client.setSoTimeout(60000);
             
             dos = new DataOutputStream(one_client.getOutputStream());
             dis = new DataInputStream(one_client.getInputStream());
             
-    		//Send
+    		//Send            
             senddata = senddata.replace("\r","");
             String cmd = cmdstr + "                                        ";
             String SendStr = String.format("%08d", senddata.getBytes().length) + cmd.substring(0,32) + senddata;
+            
+            System.out.println("TxDetail Communication Send : [" + SendStr + "]");
+            
+            
             dos.write(SendStr.getBytes(), 0, SendStr.getBytes().length);
             dos.flush();
  
@@ -908,6 +933,9 @@ public class TCheckPanelTxDetail {
                }
             }catch(Exception e2){}
       	    recvdata = new String(tmpbyte2);
+      	    
+      	    System.out.println("TxDetail Communication Rcv : [" + recvdata + "]");
+      	  
 	        return recvdata;
       
     	}
@@ -932,6 +960,7 @@ public class TCheckPanelTxDetail {
     	}
     	return "";
     }
+
 }
 
 
