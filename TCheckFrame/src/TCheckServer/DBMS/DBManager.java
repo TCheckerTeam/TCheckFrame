@@ -18,7 +18,7 @@ import java.sql.Types;
 import java.util.Properties;
 
 import TCheckServer.Util.TCheckerLog;
-
+ 
 public class DBManager {
 	private Connection conn = null;
 	private String gDbms_Type = "";
@@ -225,7 +225,8 @@ public class DBManager {
 			    tcheckerlog.WriteLog("E", "DBManager", "DB Connection is false");
 				return null;
 			}
-			  
+			
+			
 			tcheckerlog.WriteLog("D", "DBManager", isql);
 		    Statement stmt = this.conn.createStatement();
 		    int rc = stmt.executeUpdate(isql);
@@ -237,6 +238,83 @@ public class DBManager {
 			tcheckerlog.WriteLog("E", "DBManager", e);
 			try{
 			   this.conn.rollback();
+			}catch(Exception ee){}
+		}
+        return false;
+	}
+	
+	
+	/*
+	 * Test
+	 */
+	public Boolean UpdatePermitData(String savedata)
+	{
+		try{
+			if (ServerDBCheck() != true){
+			    tcheckerlog.WriteLog("E", "DBManager", "DB Connection is false");
+				return null;
+			}
+			
+			
+			//tcheckerlog.WriteLog("D", "DBManager", isql);
+			int[] rc;
+			StringBuffer sb = new StringBuffer();
+			
+			sb.append(" DELETE FROM TCHECKER_PERMIT ");
+			
+			PreparedStatement pstmt = this.conn.prepareStatement(sb.toString());
+			
+			pstmt.executeUpdate();
+			
+			sb.setLength(0);
+			
+			sb.append("");
+			sb.append(" INSERT INTO TCHECKER_PERMIT VALUES ( ?, ?, '', '', ? ) ");
+			
+		    pstmt.clearParameters();
+		    
+		    pstmt = this.conn.prepareStatement(sb.toString());
+		    
+		    tcheckerlog.WriteLog("D", "DBManager", " Insert : ["+sb.toString()+"]");
+		    
+		    String[] arrdata = savedata.split("\n");
+		    
+		    
+			for(int i=0;i < arrdata.length ;i++){
+				if (arrdata[i].equals("")) break;
+				String[] arrtmp = arrdata[i].split("\t");
+				
+				pstmt.setString(1, arrtmp[0]);
+				pstmt.setString(2, arrtmp[1]);
+				pstmt.setString(3, arrtmp[2]);				
+				
+				tcheckerlog.WriteLog("D", "DBManager", " Insert addBatch cnt : ["+i+"]");
+				
+				pstmt.addBatch();	
+				
+				
+			}
+			
+			rc = pstmt.executeBatch();
+			this.conn.commit();
+		    					
+		    if (pstmt != null) pstmt.close();
+		    		    		
+			if (rc.length > 0){
+				tcheckerlog.WriteLog("D", "DBManager", "Save :[ true ]");
+				this.conn.commit();
+				return true;
+			}else{
+				tcheckerlog.WriteLog("D", "DBManager", "Save :[ false ]");
+				return false;	
+			}
+		    
+			
+		}catch(SQLException e){
+			tcheckerlog.WriteLog("E", "DBManager", e);
+			try{
+			   this.conn.rollback();
+			   return false;
 			}catch(Exception ee){}
 		}
         return false;

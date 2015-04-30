@@ -21,7 +21,7 @@ import TCheckServer.UserClass.UserChkLen;
 import TCheckServer.UserClass.UserFunction;
 import TCheckServer.UserClass.UserShare;
 import TCheckServer.Util.DataModel.myTcpMapComm;
-
+ 
 public class TCheckerMapping {
 	private CommData               COMMDATA = null;
 	private UserShare              usergongu    = null;

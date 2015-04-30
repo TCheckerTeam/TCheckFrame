@@ -12,7 +12,7 @@ public class SendInfo {
 	private long   SendTime;
 	
 	public SendInfo() { }
- 
+  
 	public String getUserID()     {return UserID;}
 	public String getUserIP()     {return UserIP;}
 	public String getSendMsg()    {return SendMsg;}

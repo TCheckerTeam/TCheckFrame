@@ -33,7 +33,7 @@ public class ThreadUrlServer extends Thread{
     { 
     	COMMDATA = commdata;
     	client   = pSocket;
- 
+  
     }
   
 	public void run()

@@ -14,7 +14,7 @@ public class TCheckerLog {
 		String reg_dt = formatter.format(new java.util.Date()); //등록 일시
 		formatter = new java.text.SimpleDateFormat("[HH:mm:ss]", java.util.Locale.KOREA);
 		String reg_tm = formatter.format(new java.util.Date());  //등록시간 
-		
+		 
 		Exception e = new Exception();
 		StackTraceElement ste[] = e.getStackTrace();
 		String hmsg = "(" + pstatus + ") " + reg_tm ;

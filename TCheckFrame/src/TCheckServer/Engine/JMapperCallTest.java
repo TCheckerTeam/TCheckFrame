@@ -11,7 +11,7 @@ public class JMapperCallTest {
 		byte[] rcvdata;
 		msg = jc.makeHeader(InstCode, pApplCode, pKindCode, pTxCode, pSendData.getBytes());  
 		rcvmsg = jc.MapperCall("192.168.37.30", 8888, msg, "JMAPPER2");
-
+ 
 	}
 	public static void main(String[] args) {
 		String InstCode = "SIM";

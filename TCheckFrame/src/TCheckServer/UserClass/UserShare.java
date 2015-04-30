@@ -9,7 +9,7 @@ public class UserShare {
 	private String KIND_CODE = "";  
 	private String TX_CODE   = ""; 
 	private String RECVDATA  = "";
- 
+  
 	public void SetAPPL_CODE (String parm0){ APPL_CODE = parm0; }
 	public void SetKIND_CODE (String parm0){ KIND_CODE = parm0; }
 	public void SetTX_CODE   (String parm0){ TX_CODE   = parm0; }

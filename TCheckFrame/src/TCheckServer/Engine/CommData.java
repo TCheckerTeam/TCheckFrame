@@ -6,7 +6,7 @@ import TCheckServer.Util.TCheckerLog;
 public class CommData {
 	private TCheckerLog   tcheckerlog = null;
 	private DBManager     dbmanager   = null;
- 
+  
 	private String APPL_CODE      = "";     //업무코드
 	private String LU_NAME        = "";     //PortNo
 	private String CONNECT_TYPE   = "";     //Connect Type

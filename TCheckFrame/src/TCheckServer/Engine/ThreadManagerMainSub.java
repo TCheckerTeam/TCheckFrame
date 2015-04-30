@@ -28,7 +28,7 @@ public class ThreadManagerMainSub extends Thread{
     private Socket      client = null;
     public ThreadManagerMainSub(Socket client, CommData commdata)
     { 
-    	
+    
     	this.COMMDATA = commdata;
     	this.client = client;
     	getSystemInfo();
@@ -53,6 +53,8 @@ public class ThreadManagerMainSub extends Thread{
 				break;
 			}
             
+			
+			
             int    tmplen = 0;
             byte[] tmpbyte1 = new byte[8];
             try{
@@ -70,8 +72,11 @@ public class ThreadManagerMainSub extends Thread{
             if (tmplen == 0) continue;
             if (tmplen != 8) break;
      
-      	    String datalen = new String(tmpbyte1);
-      	    COMMDATA.GetTCheckerLog().WriteLog("D", "MgrManager", "datalen : " + datalen);
+            COMMDATA.GetTCheckerLog().WriteLog("D", "MgrManager", "");
+            COMMDATA.GetTCheckerLog().WriteLog("D", "MgrManager", " ************ Receive Msg ************ ");
+            
+            String datalen = new String(tmpbyte1);
+      	    COMMDATA.GetTCheckerLog().WriteLog("D", "MgrManager", " Rcv datalen : [" + datalen + "]");
  
       	    //Command부 길이정보 읽기
             tmplen = 0;
@@ -89,7 +94,7 @@ public class ThreadManagerMainSub extends Thread{
             if (tmplen < 32) break;
  
       	    String datacmd = new String(tmpbyte2);
-      	    COMMDATA.GetTCheckerLog().WriteLog("D", "MgrManager", "datacmd : " + datacmd);
+      	    COMMDATA.GetTCheckerLog().WriteLog("D", "MgrManager", " Rcv datacmd : [" + datacmd + "]");
       	  
             //데이타부 읽기
             tmplen = 0;
@@ -104,7 +109,7 @@ public class ThreadManagerMainSub extends Thread{
 		    }catch(Exception e2){}
  
       	    String databuf = new String(tmpbyte3);
-      	    COMMDATA.GetTCheckerLog().WriteLog("D", "MgrManager", "databuf : " + databuf);
+      	    COMMDATA.GetTCheckerLog().WriteLog("D", "MgrManager", "Rcv databuf : [" + databuf + "]");
       	    
       	    //Proc Parsing
       	    
@@ -122,7 +127,7 @@ public class ThreadManagerMainSub extends Thread{
              if (datacmd.trim().equals("READ_TXDETAIL")) retdata = Proc_DBSearchTxDetail(databuf);
              if (datacmd.trim().equals("SAVE_TXDETAIL")) retdata = Proc_DBUpdateTxDetail(databuf);
             
-             if (datacmd.trim().equals("READ_RESLINK")) retdata = Proc_DBSearchResLink();
+             if (datacmd.trim().equals("READ_RESLINK")) retdata = Proc_DBSearchResLink(databuf);
              if (datacmd.trim().equals("READ_RESLINKONE")) retdata = Proc_DBSearchResLinkOne(databuf);
             
              if (datacmd.trim().equals("SAVE_RESLINK")) retdata = Proc_DBUpdateResLink(databuf);
@@ -135,11 +140,22 @@ public class ThreadManagerMainSub extends Thread{
              if (datacmd.trim().equals("READ_PERMIT")) retdata = Proc_DBSearchPermit(databuf);
              if (datacmd.trim().equals("SAVE_PERMIT")) retdata = Proc_DBUpdatePermit(databuf);
              if (datacmd.trim().equals("READ_PERMITAPPL")) retdata = Proc_DBSearchPermitAppl(databuf);
+             
+             //hmkim : 2015-04-25 added-start
+             if (datacmd.trim().equals("USER_INOUTTCPAPPL")) retdata = Proc_DBSearchInOutBoundTcpAppl(databuf);
+             if (datacmd.trim().equals("USER_INOUTURLAPPL")) retdata = Proc_DBSearchInOutBoundUrlAppl(databuf);
+             if (datacmd.trim().equals("USER_KINDTXLIST")) retdata = Proc_DBSearchKindTxList(databuf);
+             //hmkim : 2015-04-25 added-end
             
              if (datacmd.trim().equals("READ_ADMINIP")) retdata = Proc_DBSearchAdminIP();
 
              if (datacmd.trim().equals("CHECK_USERID")) retdata = Proc_DBCheck_UserID(databuf);
-             if (datacmd.trim().equals("READ_TXMAPPING_LIST")) retdata = Proc_DBSearchTxMappingList();
+             
+             if (datacmd.trim().equals("READ_ASYNCAPPLIST")) retdata = Proc_DBSearchAsyncApplList();
+             if (datacmd.trim().equals("READ_TXMAPPING_LIST")) retdata = Proc_DBSearchTxMappingList(databuf);
+             
+             if (datacmd.trim().equals("LOAD_USERHEADER")) retdata = Proc_LoadUserHeader(databuf);
+             if (datacmd.trim().equals("SAVE_USERHEADER")) retdata = Proc_SaveUserHeader(databuf);
              
              
              if (datacmd.trim().equals("READ_WIRELESSRES")) {
@@ -189,11 +205,17 @@ public class ThreadManagerMainSub extends Thread{
              	//Response Data Creation & Send
                  String SendLen = String.format("%08d", retdata.getBytes().length);
                  String SendStr = SendLen + retdata;
-                 COMMDATA.GetTCheckerLog().WriteLog("D", "MgrManager", "Response : \n" + SendStr);
+                 
+                 COMMDATA.GetTCheckerLog().WriteLog("D", "MgrManager", "");
+                 COMMDATA.GetTCheckerLog().WriteLog("D", "MgrManager", "************ Response Msg ************ ");
+                 COMMDATA.GetTCheckerLog().WriteLog("D", "MgrManager", "Response : \n [" + SendStr + "]");
                  
                  try{
+                	 
     	             dos.write(SendStr.getBytes(),0,SendStr.getBytes().length);
     	             dos.flush();
+    	             COMMDATA.GetTCheckerLog().WriteLog("D", "MgrManager", "************ Response Msg END datacmd: ["+datacmd.trim()+"]");
+    	             
                  }catch(Exception e1){
                 	 COMMDATA.GetTCheckerLog().WriteLog("E", "MgrManager", e1);
                  }
@@ -461,17 +483,39 @@ public class ThreadManagerMainSub extends Thread{
 
 		return retdata;
 	}
-	private String Proc_DBSearchTxMappingList()
+	private String Proc_DBSearchAsyncApplList()
 	{
+		String isql = "    SELECT APPL_CODE, APPL_NAME  FROM ALAPPL A ";
+	    isql = isql + "\n WHERE APPL_CODE IN ( SELECT APPL_CODE FROM ALTX WHERE STA_TYPE = 1 AND RES_FLAG != 1)  ";
+	    isql = isql + "\n    AND STA_TYPE = 1        ";
+	    isql = isql + "\n ORDER BY A.APPL_CODE     ";
+		String retdata = COMMDATA.GetDBManager().SearchData(isql);
+ 
+		if (retdata == null || retdata.equals("")) return "NOT-FOUND";
+
+		return retdata;
+	}
+	private String Proc_DBSearchTxMappingList(String pApplCode)
+	{
+		/*
+		 * TCheckPanelTxDetail, TCheckPanelResMap 에서 사용하는 함수
+		 * TCheckPanelTxDetail pApplCode = <NODATA> 로 넘어옴.
+		 */
+		if(pApplCode.equals("<NODATA>")){
+			pApplCode = "";
+		}
 		
 		String isql = "   SELECT A.APPL_CODE, M.APPL_NAME, A.REP_KIND_CODE, B.NAME, A.TX_CODE, A.NAME  ";
 	    isql = isql + "\n FROM ALTX A, ALKIND B, ALAPPL M            ";
-	    isql = isql + "\n  WHERE A.STA_TYPE = 1                      ";
+	    isql = isql + "\n  WHERE A.APPL_CODE like '%" + pApplCode + "%'  ";
+	    isql = isql + "\n    AND A.STA_TYPE = 1                      ";
 	    isql = isql + "\n    AND A.APPL_CODE = B.APPL_CODE           ";
 	    isql = isql + "\n    AND A.REP_KIND_CODE = B.REP_KIND_CODE   ";
 	    isql = isql + "\n    AND A.APPL_CODE = M.APPL_CODE           ";
 	    isql = isql + "\n    AND B.APPL_CODE = M.APPL_CODE           ";
-	    isql = isql + "\n    AND A.RES_FLAG != 1                     ";
+	    if(!pApplCode.equals("")){
+	    	isql = isql + "\n    AND A.RES_FLAG != 1                     ";
+	    }
 	    isql = isql + "\n ORDER BY A.APPL_CODE ,A.REP_KIND_CODE, A.TX_CODE         ";
 
 		String retdata = COMMDATA.GetDBManager().SearchData(isql);
@@ -585,10 +629,11 @@ public class ThreadManagerMainSub extends Thread{
 	
  
 	
-	private String Proc_DBSearchResLink()
+	private String Proc_DBSearchResLink(String pApplCode)
 	{
 		String isql = " SELECT REQ_APPL_CODE, REQ_KIND_CODE, REQ_TX_CODE  , RES_APPL_CODE, RES_KIND_CODE, RES_TX_CODE  , RES_PORTNO ";
 	    isql = isql + "\n FROM TCHECKER_RESLINK                         ";
+	    isql = isql + "\n WHERE REQ_APPL_CODE = '" + pApplCode + "' ";
 	    isql = isql + "\n ORDER BY REQ_APPL_CODE, REQ_KIND_CODE, REQ_TX_CODE";
  
 		String retdata = COMMDATA.GetDBManager().SearchData(isql);
@@ -811,19 +856,12 @@ public class ThreadManagerMainSub extends Thread{
 	
 	private String Proc_DBSearchPermit(String pUserID)
 	{
-		String isql = "  SELECT D.APPL_CODE, D.APPL_NAME, D.REP_KIND_CODE, D.APPLNAME, D.TX_CODE, D.NAME, NVL(T.PERMIT,'N') ";
-	    isql = isql + "\n FROM (SELECT C.APPL_CODE, C.APPL_NAME, B.REP_KIND_CODE, B.NAME APPLNAME, A.TX_CODE,A.NAME ";
-	    isql = isql + "\n FROM ALAPPL C, ALTX A, ALKIND B ";
-	    isql = isql + "\n WHERE A.STA_TYPE = 1 ";
-	    isql = isql + "\n   AND A.APPL_CODE = C.APPL_CODE ";
-	    isql = isql + "\n   AND A.APPL_CODE = B.APPL_CODE ";
-	    isql = isql + "\n   AND A.REP_KIND_CODE = B.REP_KIND_CODE ) D ";
+		String isql = "  SELECT D.APPL_CODE, D.APPL_NAME, NVL(T.PERMIT,'N') ";
+	    isql = isql + "\n FROM (SELECT C.APPL_CODE, C.APPL_NAME FROM ALAPPL C WHERE C.STA_TYPE = 1 ) D ";
 	    isql = isql + "\n LEFT JOIN TCHECKER_PERMIT T ";
 	    isql = isql + "\n ON ('" + pUserID + "' = T.USERID ";
-	    isql = isql + "\n   AND D.APPL_CODE = T.APPL_CODE ";
-	    isql = isql + "\n   AND D.REP_KIND_CODE = T.KIND_CODE ";
-	    isql = isql + "\n   AND D.TX_CODE = T.TX_CODE ) ";
-	    isql = isql + "\n ORDER BY D.APPL_CODE, D.REP_KIND_CODE, D.TX_CODE ";
+	    isql = isql + "\n   AND D.APPL_CODE = T.APPL_CODE  ) ";
+	    isql = isql + "\n ORDER BY D.APPL_CODE  ";
  
  
 		String retdata = COMMDATA.GetDBManager().SearchData(isql);
@@ -848,50 +886,51 @@ public class ThreadManagerMainSub extends Thread{
 	}
 	private String Proc_DBUpdatePermit(String savedata)
 	{
+		long startTime = System.currentTimeMillis();
  
-		String[] arrdata = savedata.split("\n");
-		for(int i=0;i < arrdata.length ;i++){
-			if (arrdata[i].equals("")) break;
-			String[] arrtmp = arrdata[i].split("\t");
-			String uSql = "";
-			String iSql = "";
-            try {
-        
-    			uSql = "  Update TCHECKER_PERMIT Set ";
-    			uSql = uSql + "\n  PERMIT   = '" + arrtmp[4] + "' ";
-    			uSql = uSql + "\n  Where USERID     = '" + arrtmp[0] + "' ";
-    			uSql = uSql + "\n    AND APPL_CODE  = '" + arrtmp[1] + "' ";
-    			uSql = uSql + "\n    AND KIND_CODE  = '" + arrtmp[2] + "' ";
-    			uSql = uSql + "\n    AND TX_CODE    = '" + arrtmp[3] + "' ";
+//		COMMDATA.GetDBManager().UpdateData("  DELETE FROM TCHECKER_PERMIT ");
+// 
+//		String[] arrdata = savedata.split("\n");
+//				
+//		for(int i=0;i < arrdata.length ;i++){
+//			if (arrdata[i].equals("")) break;
+//			String[] arrtmp = arrdata[i].split("\t");
+//			String uSql = "";
+//			String iSql = "";
+//            try {
+//            			
+//    			iSql = " Insert Into TCHECKER_PERMIT (";
+//                iSql = iSql + "\n USERID       , ";
+//                iSql = iSql + "\n APPL_CODE    , ";
+//                iSql = iSql + "\n KIND_CODE    , ";
+//                iSql = iSql + "\n TX_CODE      , ";
+//                iSql = iSql + "\n PERMIT         ";
+//                iSql = iSql + "\n ) values ( ";
+//                iSql = iSql + "\n '" + arrtmp[0] + "', ";
+//                iSql = iSql + "\n '" + arrtmp[1] + "', ";
+//                iSql = iSql + "\n '" + "ALL" + "', ";
+//                iSql = iSql + "\n '" + "ALL" + "', ";
+//                iSql = iSql + "\n '" + arrtmp[2] + "') ";
+//  
+//            }catch(Exception e) {
+//            	COMMDATA.GetTCheckerLog().WriteLog("E", "MgrManager", e);
+//            }
+//             
+//			Boolean InsertFlag = COMMDATA.GetDBManager().UpdateData(iSql);
+//			if (InsertFlag != true){
+//				COMMDATA.GetDBManager().ServerDBRollback();
+//				return "ERROR";
+//			}
+//		}
+//		COMMDATA.GetDBManager().ServerDBCommit();
+	 
+		Boolean InsertFlag = COMMDATA.GetDBManager().UpdatePermitData(savedata);
+		long endTime = System.currentTimeMillis();
+		
+		COMMDATA.GetTCheckerLog().WriteLog("D", "MgrManager", "Execute Time : ["+( endTime - startTime )/1000.0f +"초]");
+		
  
-    	 
-    			iSql = " Insert Into TCHECKER_PERMIT (";
-                iSql = iSql + "\n USERID       , ";
-                iSql = iSql + "\n APPL_CODE    , ";
-                iSql = iSql + "\n KIND_CODE    , ";
-                iSql = iSql + "\n TX_CODE      , ";
-                iSql = iSql + "\n PERMIT         ";
-                iSql = iSql + "\n ) values ( ";
-                iSql = iSql + "\n '" + arrtmp[0] + "', ";
-                iSql = iSql + "\n '" + arrtmp[1] + "', ";
-                iSql = iSql + "\n '" + arrtmp[2] + "', ";
-                iSql = iSql + "\n '" + arrtmp[3] + "', ";
-                iSql = iSql + "\n '" + arrtmp[4] + "') ";
-  
-            }catch(Exception e) {
-            	COMMDATA.GetTCheckerLog().WriteLog("E", "MgrManager", e);
-            }
- 
-            Boolean UpdateFlag = COMMDATA.GetDBManager().UpdateData(uSql);
-    		if (UpdateFlag != true) {
-    			Boolean InsertFlag = COMMDATA.GetDBManager().UpdateData(iSql);
-    			if (InsertFlag != true){
-    				COMMDATA.GetDBManager().ServerDBRollback();
-    				return "ERROR";
-    			}
-    		}
-		}
-		COMMDATA.GetDBManager().ServerDBCommit();
+		
 		return "OK";
 	}
 	
@@ -1960,6 +1999,10 @@ public class ThreadManagerMainSub extends Thread{
 					}
 				}
 		 
+				//User가 Header를 변경해야 하는 경우에 로직 처리
+				String ConvHead = UserHeader(pApplCode, "REQ");
+				if (!ConvHead.equals("")) headstr = ConvHead;
+				
 				if (MAP_FLAG.equals("B")) return headstr + bodystr;
 				if (MAP_FLAG.equals("P")) return headstr + "<BODYBYPASS>";
 				if (MAP_FLAG.equals("H")) return bodystr;
@@ -2089,6 +2132,10 @@ public class ThreadManagerMainSub extends Thread{
 					}
 				}
  
+				//User가 Header를 변경해야 하는 경우에 로직 처리
+				String ConvHead = UserHeader(pApplCode, "REQ");
+				if (!ConvHead.equals("")) headstr = ConvHead;
+				
 				return headstr;
 			}
 			else {
@@ -2282,6 +2329,10 @@ public class ThreadManagerMainSub extends Thread{
 					}
 				}
 				
+				//User가 Header를 변경해야 하는 경우에 로직 처리
+				String ConvHead = UserHeader(pApplCode, "RES");
+				if (!ConvHead.equals("")) headstr = ConvHead;
+				
 				if (MAP_FLAG.equals("B")) return headstr + bodystr;
 				if (MAP_FLAG.equals("P")) return headstr + "<BODYBYPASS>";
 				if (MAP_FLAG.equals("H")) return bodystr;
@@ -2439,6 +2490,10 @@ public class ThreadManagerMainSub extends Thread{
  
 				}
  
+				//User가 Header를 변경해야 하는 경우에 로직 처리
+				String ConvHead = UserHeader(pApplCode, "REQ");
+				if (!ConvHead.equals("")) headstr = ConvHead;
+				
 				return headstr;
 			}
 			else {
@@ -2607,4 +2662,152 @@ public class ThreadManagerMainSub extends Thread{
  
 		return "";
     }
+    
+    private String UserHeader(String pApplCode, String gGubun)
+    {
+    	String  fname = "";
+    	String  RData = "";
+    	
+    	COMMDATA.GetTCheckerLog().WriteLog("D", "MgrManager", "UserHeader Start : " + pApplCode + ":" + gGubun);
+    	
+    	//Req 및 Res 헤더가 모두 동일한 경우
+    	try{
+        	fname = "./UserHeader/" + pApplCode + ".all"  ;
+        	RData = ReadFileData(fname);
+        	COMMDATA.GetTCheckerLog().WriteLog("D", "MgrManager", "UserHeader Start-all : " + pApplCode + ":" + gGubun + ":" + RData);
+    	}catch (Exception e){}
+
+    	if (RData.trim().equals("")) {
+        	//Req 헤더
+        	if (gGubun.equals("REQ")) {
+            	try{
+                	fname = "./UserHeader/" + pApplCode + ".req"  ;
+                	RData = ReadFileData(fname);
+                	COMMDATA.GetTCheckerLog().WriteLog("D", "MgrManager", "UserHeader Start-req : " + pApplCode + ":" + gGubun + ":" + RData);
+            	}catch (Exception e){}
+        	}
+        	
+        	//Res 헤더
+        	if (gGubun.equals("RES")) {
+            	try{
+                	fname = "./UserHeader/" + pApplCode + ".res"  ;
+                	RData = ReadFileData(fname);
+                	COMMDATA.GetTCheckerLog().WriteLog("D", "MgrManager", "UserHeader Start-res : " + pApplCode + ":" + gGubun + ":" + RData);
+            	}catch (Exception e){}
+        	}
+    	}
+
+    	//주석처리된 항목 및 공백라인 제거
+    	String retstr = "";
+    	String[] arrtmp = RData.replace("\r\n","\n").split("\n");
+    	for(int i=0;i < arrtmp.length ;i++)
+    	{
+    		if (arrtmp[i].trim().length() > 10) {
+    			if (arrtmp[i].trim().indexOf("#") != 0 ) {
+    				String[] arrsub = arrtmp[i].replace(",", "\t").split("\t");
+    				
+    				//한글명 + 영문영 + 타임 + 길이
+    			    retstr = retstr + arrsub[0] + "\t" +  arrsub[1] + "\t" +  arrsub[2] + "\t" +  arrsub[3] + "\t" + "\t<NODATA>\n";
+    			}
+    		}
+    	}
+    	
+    	COMMDATA.GetTCheckerLog().WriteLog("D", "MgrManager", "UserHeader Start : " + pApplCode + ":" + gGubun + ":" + retstr);
+    	return retstr;
+    }
+    
+	private String Proc_LoadUserHeader(String pRecvData)
+	{
+		COMMDATA.GetTCheckerLog().WriteLog("D", "MgrManager", "Load UserHeader Start : " + pRecvData);
+		String RData = ReadFileData("./UserHeader/" + pRecvData);
+		COMMDATA.GetTCheckerLog().WriteLog("D", "MgrManager", "Load UserHeader Result : " + RData);
+		return RData;
+	}
+	private String Proc_SaveUserHeader(String pRecvData)
+	{
+		//확인완료
+		try {
+			String[] arrtmp = pRecvData.split("<DATAGUBUN>");
+			DataOutputStream out = new DataOutputStream(new FileOutputStream(new File("./UserHeader/" + arrtmp[0])));
+			out.write(arrtmp[1].getBytes());
+			out.close();
+			return "OK";
+		}catch(Exception e) {
+            return "ERROR";
+		}
+	}
+ 
+	private String Proc_DBSearchInOutBoundTcpAppl(String pUserID)
+	{
+		String isql = "  select x.INOUT_FLAG, x.appl_code, a.appl_name                                     ";  
+		isql = isql + "\n from alappl a, TCHECKER_TXDETAIL x                                              ";
+		isql = isql + "\n where x.appl_code = a.appl_code                                                   ";     
+		isql = isql + "\n   and a.sta_type = 1                                                                   ";
+		isql = isql + "\n   and x.appl_code not in (select appl_code from alurl where sta_type = 1) ";
+		
+		if (!pUserID.trim().equals("NODATA")) {
+			String userpermit = COMMDATA.GetDBManager().SearchData("select PERMIT from tchecker_user where userid = '" + pUserID + "' ");
+			if (userpermit.indexOf("APPL") >= 0) {
+				isql = isql + "\n   and x.appl_code in (select appl_code from  TCHECKER_PERMIT ";
+				isql = isql + "\n                            where userid = '" + pUserID + "' ";
+				isql = isql + "\n                               and kind_code = 'ALL' and tx_code = 'ALL' and PERMIT = 'Y') ";
+		    }
+		}
+		
+		isql = isql + "\n group by x.INOUT_FLAG,x.appl_code, a.appl_name                               ";
+		isql = isql + "\n order by x.INOUT_FLAG,x.appl_code, a.appl_name                               ";
+		
+		String retdata = COMMDATA.GetDBManager().SearchData(isql);
+		if (retdata == null || retdata.equals("")) return "NOT-FOUND";
+		return retdata;
+	}	
+	private String Proc_DBSearchInOutBoundUrlAppl(String pUserID)
+	{
+		String isql = "  select x.INOUT_FLAG, x.appl_code, a.appl_name                                     ";  
+		isql = isql + "\n from alappl a, TCHECKER_TXDETAIL x                                              ";
+		isql = isql + "\n where x.appl_code = a.appl_code                                                   ";     
+		isql = isql + "\n   and a.sta_type = 1                                                                   ";
+		isql = isql + "\n   and x.appl_code in (select appl_code from alurl where sta_type = 1) ";
+		
+		if (!pUserID.trim().equals("NODATA")) {
+			String userpermit = COMMDATA.GetDBManager().SearchData("select PERMIT from tchecker_user where userid = '" + pUserID + "' ");
+			if (userpermit.indexOf("APPL") >= 0) {
+				isql = isql + "\n   and x.appl_code in (select appl_code from  TCHECKER_PERMIT ";
+				isql = isql + "\n                            where userid = '" + pUserID + "' ";
+				isql = isql + "\n                               and kind_code = 'ALL' and tx_code = 'ALL' and PERMIT = 'Y') ";
+		    }
+		}
+		
+		isql = isql + "\n group by x.INOUT_FLAG,x.appl_code, a.appl_name                               ";
+		isql = isql + "\n order by x.INOUT_FLAG,x.appl_code, a.appl_name                               ";
+		
+		String retdata = COMMDATA.GetDBManager().SearchData(isql);
+		if (retdata == null || retdata.equals("")) return "NOT-FOUND";
+		return retdata;
+	}
+	private String Proc_DBSearchKindTxList(String pRecvData)
+	{
+		String[] arrtmp = pRecvData.split("\t");
+		String   pApplCode   = arrtmp[0];
+		String   pInoutFlag    = arrtmp[1];
+ 
+		String isql = " select t.rep_kind_code, k.name, t.tx_code, t.name  ";
+		isql = isql + "\n from altx t, alkind k, TCHECKER_TXDETAIL x         ";
+		isql = isql + "\n where t.appl_code = '" + pApplCode + "'   ";
+		isql = isql + "\n   and x.INOUT_FLAG = '" + pInoutFlag + "'   ";
+		isql = isql + "\n   and t.appl_code = k.appl_code                    ";
+		isql = isql + "\n   and k.rep_kind_code = x.kind_code                    ";
+		isql = isql + "\n   and t.rep_kind_code = k.rep_kind_code            ";
+		isql = isql + "\n   and t.sta_type = 1                               ";
+		isql = isql + "\n   and k.sta_type = 1                               ";
+		isql = isql + "\n   and t.appl_code = x.appl_code                    ";
+		isql = isql + "\n   and t.appl_code = x.appl_code                    ";
+		isql = isql + "\n   and t.tx_code = x.tx_code                        ";
+		
+		String retdata = COMMDATA.GetDBManager().SearchData(isql);
+		if (retdata == null || retdata.equals("")) return "NOT-FOUND";
+
+		return retdata;
+	}
+ 
 }

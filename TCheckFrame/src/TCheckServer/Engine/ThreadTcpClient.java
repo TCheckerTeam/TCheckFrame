@@ -50,7 +50,7 @@ public class ThreadTcpClient extends Thread{
     	GetApplInternalInfo();
     	GetSharedInfo();
     	setLastStatus();
-    	
+     
 		usergongu    = new UserShare(COMMDATA);
 		userfunction = new UserFunction();
 		userlength   = new UserChkLen();

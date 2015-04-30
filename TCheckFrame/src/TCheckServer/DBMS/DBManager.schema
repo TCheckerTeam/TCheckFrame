@@ -70,16 +70,49 @@ ALTER TABLE TCHECKER_USER
 CREATE TABLE TCHECKER_PERMIT (
              USERID           VARCHAR2(20)  NOT NULL,     --사용자ID
              APPL_CODE        VARCHAR2(4)   NOT NULL,     --요청업무코드
-             KIND_CODE        VARCHAR2(10)  NOT NULL,     --요청종별코드
-             TX_CODE          VARCHAR2(10)  NOT NULL,     --요청거래코드
+             KIND_CODE        VARCHAR2(10)  NULL,         --요청종별코드
+             TX_CODE          VARCHAR2(10)  NULL,         --요청거래코드
              PERMIT           VARCHAR2(1)   NOT NULL      --허용여부(Y/N)
 );
  
  
 ALTER TABLE TCHECKER_PERMIT
-       ADD  ( PRIMARY KEY (USERID,APPL_CODE,KIND_CODE,TX_CODE) ) ;     
-       
-insert into TCHECKER_USER values('Administrator','1234','admin','127.0.0.1:60001:60002','ALL');
-insert into TCHECKER_USER values('user01','1234','user','127.0.0.1:60001:60002','ALL');
-                            
+       ADD  ( PRIMARY KEY (USERID,APPL_CODE,PERMIT) ) ;     
   
+/* 응답거래 Link 정보에 대한 설정 정보 */
+CREATE TABLE TCHECKER_ASYNCINRES (
+             TRAN_DATE        VARCHAR2(8)   NOT NULL,     --요청일자
+             TRAN_TIME        VARCHAR2(6)   NOT NULL,     --요청시간
+             APPL_CODE        VARCHAR2(4)   NOT NULL,     --요청업무코드
+             KIND_CODE        VARCHAR2(10)  NOT NULL,     --요청종별코드
+             TX_CODE          VARCHAR2(10)  NOT NULL,     --요청거래코드
+             IP               VARCHAR2(40)  NOT NULL,     --PC IPAddress
+             SEND_YN          VARCHAR2(1)                 --전송여부(Y/N)
+);
+ 
+ALTER TABLE TCHECKER_ASYNCINRES
+       ADD  ( PRIMARY KEY (TRAN_DATE,TRAN_TIME, APPL_CODE,KIND_CODE,TX_CODE,IP) ) ;
+            
+insert into TCHECKER_USER values('Administrator','1234','Admin','127.0.0.1:60001:60002','ALL');
+insert into TCHECKER_USER values('user01','1234','User','127.0.0.1:60001:60002','ALL');
+
+--거래별 I/O 설정을 일괄로 하는 쿼리
+UPDATE (
+     SELECT T.INOUT_FLAG INOUT_FLAG 
+     FROM TCHECKER_TXDETAIL T, 
+     (
+          SELECT APPL_CODE,REP_KIND_CODE,TX_CODE
+          FROM ALTXPARM 
+          WHERE STA_TYPE = '1' AND SVCNAME IN ( SELECT SVCNAME FROM ALGW WHERE STA_TYPE = '1')
+     ) A
+     WHERE T.APPL_CODE = A.APPL_CODE
+       AND T.KIND_CODE = A.REP_KIND_CODE
+       AND T.TX_CODE = A.TX_CODE
+)
+SET
+  INOUT_FLAG = 'O'
+;
+
+-- DB2 일 경우,  거래별 I/O 설정을 일괄로 하는 쿼리
+--UPDATE ( SELECT T.INOUT_FLAG INOUT_FLAG FROM TCHECKER_TXDETAIL T, ( SELECT APPL_CODE,REP_KIND_CODE,TX_CODE FROM ALTXPARM WHERE STA_TYPE = '1' AND SVCNAME IN ( SELECT SVCNAME FROM ALGW WHERE STA_TYPE = '1') ) A WHERE T.APPL_CODE = A.APPL_CODE AND T.KIND_CODE = A.REP_KIND_CODE AND T.TX_CODE = A.TX_CODE ) SET INOUT_FLAG = 'O'
+--UPDATE ( SELECT T.INOUT_FLAG INOUT_FLAG FROM TCHECKER_TXDETAIL T INNER JOIN ( SELECT APPL_CODE,REP_KIND_CODE,TX_CODE FROM ALTXPARM WHERE STA_TYPE = '1' AND SVCNAME IN ( SELECT SVCNAME FROM ALGW WHERE STA_TYPE = '1') ) A ON T.APPL_CODE = A.APPL_CODE AND T.KIND_CODE = A.REP_KIND_CODE AND T.TX_CODE = A.TX_CODE ) SET INOUT_FLAG = 'O'

@@ -24,8 +24,7 @@ import TCheckServer.Util.TCheckerMapping;
 public class ThreadTcpServer extends Thread{ 
 	private HashMap<String, SendInfo> hashsender = new HashMap<String, SendInfo>();
 	private CommData         COMMDATA  = null;
- 
-	private UserShare        usergongu    = null;
+ 	private UserShare        usergongu    = null;
 	private UserFunction     userfunction = null;
 	private UserChkLen       userlength   = null;
 	private String           recvdata  = "";
