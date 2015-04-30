@@ -3,7 +3,7 @@ package TCheckServer.UserClass;
 import TCheckServer.Engine.CommData;
 
 public class UserChkLen {
- 
+  
 	/*----------------------- System Define Init Logic ---------------------------*/
 	public UserChkLen(){
 		//반드시 해당 함수가 존재해야 함.
@@ -48,6 +48,7 @@ public class UserChkLen {
     		//Header는 읽은상태이므로, Body 길이만 계산하여 리턴한다.
     		return len + 10;
     	}
+    	
 		return 0;
 	}
 }

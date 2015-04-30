@@ -9,8 +9,7 @@ public class ThreadTcpServerMain extends Thread{
  
 	public ThreadTcpServerMain(CommData commdata)
     { 
- 
-    	COMMDATA = commdata;
+     	COMMDATA = commdata;
     
     }
     public void run()

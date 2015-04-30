@@ -1,14 +1,16 @@
-package Manager.DataModel;
+package User.DataModel;
 
 import javax.swing.tree.DefaultMutableTreeNode;
+
 import org.jdesktop.swingx.treetable.AbstractTreeTableModel;
   
-public class myUserPermitModel extends AbstractTreeTableModel {  
+public class myDataEditorModel extends AbstractTreeTableModel {  
   
-    private String[] titles = {"업무코드","업무명", "권한(Y/N)"};  
-  
-    public myUserPermitModel(DefaultMutableTreeNode root) {  
+    private String[] titles = {"No", "한글명", "영문명","타입","길이"};  
+    private boolean[] editablelist = new boolean[titles.length];
+    public myDataEditorModel(DefaultMutableTreeNode root) {  
         super(root);  
+        for(int i=0;i < editablelist.length ;i++) editablelist[i] = true;
     }  
   
     /** 
@@ -33,58 +35,55 @@ public class myUserPermitModel extends AbstractTreeTableModel {
     }  
   
     public Object getValueAt(Object arg0, int arg1) {  
-        if (arg0 instanceof myUserPermitComm) {  
-        	myUserPermitComm data = (myUserPermitComm) arg0;  
+        if (arg0 instanceof myDataEditorComm) {  
+        	myDataEditorComm data = (myDataEditorComm) arg0;  
             if (data != null) {  
                 switch (arg1) {  
-	                case 0:  
-	                    return data.getApplCode();  
-	                case 1:  
-	                    return data.getApplName();  
-                    case 2:  
-                        return data.getPermitFlag();  
+                    case 0: return data.getNo();
+	                case 1: return data.getKor();
+	                case 2: return data.getEng();
+	                case 3: return data.getType();
+	                case 4: return data.getLen();
                 }  
             }  
-  
         }  
   
         if (arg0 instanceof DefaultMutableTreeNode) {  
             DefaultMutableTreeNode dataNode = (DefaultMutableTreeNode) arg0;  
-            myUserPermitComm data = (myUserPermitComm) dataNode.getUserObject();  
+            myDataEditorComm data = (myDataEditorComm) dataNode.getUserObject();  
             if (data != null) {  
                 switch (arg1) {  
-	                case 0:  
-	                    return data.getApplCode();  
-	                case 1:  
-	                    return data.getApplName();  
-	                case 2:  
-	                    return data.getPermitFlag();  
+	                case 0: return data.getNo();
+	                case 1: return data.getKor();
+	                case 2: return data.getEng();
+	                case 3: return data.getType();
+	                case 4: return data.getLen();
                 }  
             }  
   
         }  
         return null;  
     }  
-  
     @Override
 	public void setValueAt(Object value, Object node, int col) {
     	if (node instanceof DefaultMutableTreeNode) {
   	         DefaultMutableTreeNode dataNode = (DefaultMutableTreeNode) node;  
-	         myUserPermitComm data = (myUserPermitComm) dataNode.getUserObject(); 
+	         myDataEditorComm data = (myDataEditorComm) dataNode.getUserObject(); 
  
 	         if (data != null && value != null) {
 	        	 
 	             switch (col) {  
-	                case 0: data.setApplCode  ((String)value); break;
-	                case 1: data.setApplName  ((String)value); break;
-	                case 2: data.setPermitFlag((String)value); break;
+	                case 0: data.setNo   ((String)value); break;
+	                case 1: data.setKor   ((String)value); break;
+	                case 2: data.setEng  ((String)value); break;
+	                case 3: data.setType ((String)value); break;
+	                case 4: data.setLen  ((String)value); break;
                 }                 
 	         }                      
                                   
     	}
 	 
 	}
-    
     public Object getChild(Object arg0, int arg1) {  
   
         if (arg0 instanceof DefaultMutableTreeNode) {  
@@ -95,7 +94,9 @@ public class myUserPermitModel extends AbstractTreeTableModel {
     }  
     @Override
     public boolean isCellEditable(Object node, int column) {
-        return column == 2;
+    	if (column == 3) return true;
+    	return false;
+ 
     }
   
     public int getChildCount(Object arg0) {  
@@ -116,4 +117,5 @@ public class myUserPermitModel extends AbstractTreeTableModel {
     public boolean isLeaf(Object node) {  
         return getChildCount(node) == 0;  
     }  
+ 
 }  

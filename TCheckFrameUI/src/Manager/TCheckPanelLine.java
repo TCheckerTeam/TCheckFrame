@@ -143,8 +143,6 @@ public class TCheckPanelLine {
     	//업무별 회선정보를 읽어온다.
     	String RData = GetLineInfo();
     	
-    	System.out.println("회선정보 : ["+RData+"]");
-    	
     	String[] arrRData = null;
     	if (RData != null) {
             arrRData = RData.split("\n");
@@ -339,12 +337,12 @@ public class TCheckPanelLine {
             senddata = senddata.replace("\r","");
             String cmd = cmdstr + "                                        ";
             String SendStr = String.format("%08d", senddata.getBytes().length) + cmd.substring(0,32) + senddata;
+            
+            System.out.println("PanelLine Communication Send : [" + SendStr + "]");
+            
             dos.write(SendStr.getBytes(), 0, SendStr.getBytes().length);
             dos.flush();
-            
-            System.out.println("Communication:" + SendStr);
-            
- 
+                        
       	    //데이타부 길이정보 읽기
             int    tmplen = 0;
             byte[] tmpbyte1 = new byte[8];
@@ -370,7 +368,10 @@ public class TCheckPanelLine {
                }
             }catch(Exception e2){}
       	    recvdata = new String(tmpbyte2);
-	        return recvdata;
+      	    
+      	    System.out.println("PanelLine Communication Rcv : [" + recvdata + "]");
+	        
+      	    return recvdata;
       
     	}
     	catch(Exception e)

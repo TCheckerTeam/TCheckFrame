@@ -9,8 +9,7 @@ public class ThreadUrlServerMain extends Thread{
 	public ThreadUrlServerMain(CommData commdata)
     { 
     	COMMDATA = commdata;
- 
-    }
+     }
     public void run()
     {
 		/*----------------- È¸¼± Listener --------------------------------*/

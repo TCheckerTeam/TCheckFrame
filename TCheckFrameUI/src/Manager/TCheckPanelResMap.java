@@ -2,6 +2,8 @@ package Manager;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Container;
+import java.awt.Font;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.Rectangle;
@@ -11,13 +13,12 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.net.SocketAddress;
-import java.nio.ByteBuffer;
-import java.nio.channels.SocketChannel;
 import java.util.prefs.Preferences;
 
+import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -39,7 +40,7 @@ import Manager.DataModel.myResMapModel;
 
 public class TCheckPanelResMap { 
 	private JPanel mypanel = null;
-	private JSplitPane splitPane, splitPane0, splitPane1, splitPane2;
+	private JSplitPane splitPane, splitPane0, splitPane1, splitPane2, splitPane3, splitPane4 ;
 	private JXTreeTable myPaneTxTable;
 	private String SelectedApplcode = "";
 	private JLabel lblReqAppl = null;
@@ -50,9 +51,19 @@ public class TCheckPanelResMap {
 	private JLabel lblResTx = null;
 	private JTextField txtResPortNo = null;
 	private DefaultMutableTreeNode permitroot = null;
+	private Font font12 = new Font("바탕체",Font.BOLD,12);
+	private Font font13 = new Font("바탕체",Font.BOLD,13);
+	private JComboBox combreqappl;
+	private JComboBox combresappl;
+	private String AsyncApplList = "";
+	private JTree  xTreeReq = null;
+	private JTree  xTreeRes = null;
+	
 	public TCheckPanelResMap(JPanel panel)
 	{
 		mypanel = panel;
+		
+		AsyncApplList = GetAsyncApplListInfo();
 		myPaneResMapInit();
 	}
 	
@@ -71,15 +82,34 @@ public class TCheckPanelResMap {
 		splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT); 
         splitPane1 = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT); 
         splitPane2 = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT); 
+        
+        splitPane3 = new JSplitPane(JSplitPane.VERTICAL_SPLIT); 
+        splitPane4 = new JSplitPane(JSplitPane.VERTICAL_SPLIT); 
  
+        //요청 업무목록 및 거래목록
+        splitPane3.setContinuousLayout(true); 
+        splitPane3.setRightComponent(Init_Tree_Request_Tx());
+        splitPane3.setLeftComponent(Init_Tree_Request_Appl());
+        splitPane3.setDividerLocation(35);
+        splitPane3.setDividerSize(0); //디바이더(분리대) 굵기 설정
+        splitPane3.setBackground(Color.WHITE);
+        
+        //응답 업무목록 및 거래목록
+        splitPane4.setContinuousLayout(true); 
+        splitPane4.setRightComponent(Init_Tree_Response_Tx());
+        splitPane4.setLeftComponent(Init_Tree_Response_Appl());
+        splitPane4.setDividerLocation(35);
+        splitPane4.setDividerSize(0); //디바이더(분리대) 굵기 설정
+        splitPane4.setBackground(Color.WHITE);
+        
 
         //상위 요청/응답 거래목록
         splitPane2.setContinuousLayout(true); //연속적인 레이아웃 기능 활성화
-        splitPane2.setRightComponent(Init_Tree_Response());
-        splitPane2.setLeftComponent(Init_Tree_Request());
+        splitPane2.setRightComponent(splitPane4);
+        splitPane2.setLeftComponent(splitPane3);
         splitPane2.setDividerLocation(left_width / 2);
         splitPane2.setDividerSize(6); //디바이더(분리대) 굵기 설정
-        splitPane2.setBackground(Color.BLACK);
+        splitPane2.setBackground(Color.WHITE);
         
         //상위 초기화버트  + 상위 요청/응답 거래목록
         splitPane1.setContinuousLayout(true); //연속적인 레이아웃 기능 활성화
@@ -87,7 +117,7 @@ public class TCheckPanelResMap {
         splitPane1.setLeftComponent(splitPane2);
         splitPane1.setDividerLocation(left_width);
         splitPane1.setDividerSize(6); //디바이더(분리대) 굵기 설정
-        splitPane1.setBackground(Color.BLACK);
+        splitPane1.setBackground(Color.WHITE);
         
         //JSplitPane 설정
  
@@ -96,23 +126,73 @@ public class TCheckPanelResMap {
         splitPane.setRightComponent(Init_Table()); //우측 컴포넌트 장착
         splitPane.setDividerLocation(left_height); //디바이더(분리대) 위치 설정      
         splitPane.setDividerSize(6); //디바이더(분리대) 굵기 설정
-        splitPane.setBackground(Color.BLACK);
+        splitPane.setBackground(Color.WHITE);
         
         JScrollPane myPaneSub2 = new JScrollPane(splitPane);
         mypanel.add(myPaneSub2, BorderLayout.CENTER);
         myPaneSub2.setAutoscrolls(true);
- 
+  
     }
-	private JScrollPane Init_Tree_Request()
+	private JLabel CreateLabel(String pTitle)
 	{
-	    JTree  xTree = null;
+    	JLabel tmplabel = new JLabel(pTitle);
+    	tmplabel.setFont(font13);
+        return tmplabel;
+	}
+	private JPanel Init_Tree_Request_Appl()
+	{
+    	//------------ Request Async Appl  ------------------------------------------
+        combreqappl = new JComboBox();
+        combreqappl.setFont(font12);
+        combreqappl.setBackground(Color.WHITE);
+        combreqappl.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent ae){
+				String cmd = ae.getActionCommand();
+				System.out.println(" ReqMap : ["+cmd+"]");
+				if (cmd.equals("comboBoxChanged")){
+					if (combreqappl.getSelectedItem() == null) return;
+					Init_Tree_Request_Tx();
+					myPaneTableRefresh();
+				}
+			}
+    	});
+        
+ 
+        String[] arrApplList = AsyncApplList.split("\n");
+        for(int i=0;i < arrApplList.length ;i++){
+        	if (arrApplList[i].trim().equals("")) break;
+        	String[] arrtmp = arrApplList[i].split("\t");
+        	combreqappl.addItem(arrtmp[0] + " - " + arrtmp[1]);
+        }
+        
+		JPanel c = new JPanel();
+		
+        JPanel p1 = new JPanel();
+        p1.setLayout(new BorderLayout());
+        p1.add(new JButton("요청업무"), BorderLayout.WEST);
+        p1.add(combreqappl, BorderLayout.CENTER);
+ 
+        c.setLayout(new BorderLayout());
+        c.add(p1, BorderLayout.NORTH);
+ 
+		return c;
+	}
+	private JScrollPane Init_Tree_Request_Tx()
+	{
+	 
 		DefaultMutableTreeNode root, node = null, nodekind = null, nodetx = null;
 		String oldappl = "";
         String oldkind = "";
+        String selectedapplcode = "";
         
+        try{
+            selectedapplcode = ((String)combreqappl.getSelectedItem()).split("-")[0].trim();
+        }catch(Exception e){}
+ 
+ 
         root = new DefaultMutableTreeNode("요청거래");
         
-        String txmappinglist = GetApplTxMappingListInfo();
+        String txmappinglist = GetApplTxMappingListInfo(selectedapplcode);
         String[] arrtxmappinglist = txmappinglist.split("\n");
         for(int i=0;i < arrtxmappinglist.length ;i++){
         	if (arrtxmappinglist[i].trim().equals("")) break;
@@ -137,40 +217,118 @@ public class TCheckPanelResMap {
         	nodekind.add(nodetx);
         }
         
-        xTree = new JTree(root);
-        xTree.addTreeSelectionListener( new TreeSelectionListener()
-                {
-                    public void valueChanged(TreeSelectionEvent e) {
-                            String tmppath = e.getPath().toString();
-                            tmppath = tmppath.substring(1, tmppath.length() - 1);
-                            
-                            String[] arrtmp = tmppath.toString().split(",");
-                            lblReqAppl.setText("NO");
-                            lblReqKind.setText("NO");
-                            lblReqTx.setText("NO");
-                            if (arrtmp.length > 1) lblReqAppl.setText(arrtmp[1]);
-                            if (arrtmp.length > 2) lblReqKind.setText(arrtmp[2]);
-                            if (arrtmp.length > 3) lblReqTx.setText(arrtmp[3]);
-                    }
+        if (xTreeReq == null) {
+            xTreeReq = new JTree(root);
+//            xTreeReq.addTreeSelectionListener( new TreeSelectionListener()
+//                    {
+//                        public void valueChanged(TreeSelectionEvent e) {
+//                                String tmppath = e.getPath().toString();
+//                                tmppath = tmppath.substring(1, tmppath.length() - 1);
+//                                
+//                                String[] arrtmp = tmppath.toString().split(",");
+//                                lblReqAppl.setText("NO");
+//                                lblReqKind.setText("NO");
+//                                lblReqTx.setText("NO");
+//                                if (arrtmp.length > 1) lblReqAppl.setText(arrtmp[1]);
+//                                if (arrtmp.length > 2) lblReqKind.setText(arrtmp[2]);
+//                                if (arrtmp.length > 3) lblReqTx.setText(arrtmp[3]);
+//                        }
+//                    }
+//            );
+        	xTreeReq.expandRow(1);
+        	xTreeReq.expandRow(2);
+        
+            JScrollPane myPaneSubtree1 = new JScrollPane(xTreeReq);
+            myPaneSubtree1.setAutoscrolls(true);
+            return myPaneSubtree1;
+        }
+        else {
+        	xTreeReq.removeAll();
+        	xTreeReq = new JTree(root);
+        	
+        	/*수정 부분*/
+        	xTreeReq.addTreeSelectionListener( new TreeSelectionListener()
+            {
+                public void valueChanged(TreeSelectionEvent e) {
+                        String tmppath = e.getPath().toString();
+                        tmppath = tmppath.substring(1, tmppath.length() - 1);
+                        
+                        String[] arrtmp = tmppath.toString().split(",");
+                        lblReqAppl.setText("NO");
+                        lblReqKind.setText("NO");
+                        lblReqTx.setText("NO");
+                        if (arrtmp.length > 1) lblReqAppl.setText(arrtmp[1]);
+                        if (arrtmp.length > 2) lblReqKind.setText(arrtmp[2]);
+                        if (arrtmp.length > 3) lblReqTx.setText(arrtmp[3]);
                 }
-        );
-        xTree.expandRow(1);
+            }
+            );
+        	/*수정 부분*/
+        	
+        	xTreeReq.expandRow(1);
+        	xTreeReq.expandRow(2);
+     
+            JScrollPane myPaneSubtree1 = new JScrollPane(xTreeReq);
+            myPaneSubtree1.setAutoscrolls(true);
+        	splitPane3.setRightComponent(myPaneSubtree1);
+        	splitPane3.updateUI();
+	        
+        }
     
-        JScrollPane myPaneSubtree1 = new JScrollPane(xTree);
-        myPaneSubtree1.setAutoscrolls(true);
-  
-
-        return myPaneSubtree1;
+        return null;
 	}
-	private JScrollPane Init_Tree_Response()
+	 
+	private JPanel Init_Tree_Response_Appl()
+	{
+    	//------------ Response Async Appl  ------------------------------------------
+        combresappl = new JComboBox();
+        combresappl.setFont(font12);
+        combresappl.setBackground(Color.WHITE);
+        combresappl.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent ae){
+				String cmd = ae.getActionCommand();
+				if (cmd.equals("comboBoxChanged")){
+					if (combresappl.getSelectedItem() == null) return;
+					Init_Tree_Response_Tx();
+				}
+			}
+    	});
+        
+        String[] arrApplList = AsyncApplList.split("\n");
+        for(int i=0;i < arrApplList.length ;i++){
+        	if (arrApplList[i].trim().equals("")) break;
+        	String[] arrtmp = arrApplList[i].split("\t");
+        	combresappl.addItem(arrtmp[0] + " - " + arrtmp[1]);
+        }
+        
+ 
+		JPanel c = new JPanel();
+        JPanel p1 = new JPanel();
+        p1.setLayout(new BorderLayout());
+        p1.add(new JButton("응답업무"), BorderLayout.WEST);
+        p1.add(combresappl, BorderLayout.CENTER);
+  
+        c.setLayout(new BorderLayout());
+        c.add(p1, BorderLayout.NORTH);
+  
+		return c;
+	}
+	
+	private JScrollPane Init_Tree_Response_Tx()
 	{
 	    JTree  xTree = null;
 		DefaultMutableTreeNode root, node= null, nodekind = null, nodetx = null;
 		String oldappl = "";
         String oldkind = "";
+ 
+        String selectedapplcode = "";
+        
+        try{
+            selectedapplcode = ((String)combresappl.getSelectedItem()).split("-")[0].trim();
+        }catch(Exception e){}
         
         root = new DefaultMutableTreeNode("응답거래");
-        String txmappinglist = GetApplTxMappingListInfo();
+        String txmappinglist = GetApplTxMappingListInfo(selectedapplcode);
         String[] arrtxmappinglist = txmappinglist.split("\n");
         for(int i=0;i < arrtxmappinglist.length ;i++){
         	if (arrtxmappinglist[i].trim().equals("")) break;
@@ -195,30 +353,67 @@ public class TCheckPanelResMap {
         	nodekind.add(nodetx);
         }
         
-        xTree = new JTree(root);
-        xTree.addTreeSelectionListener( new TreeSelectionListener()
-                {
-                    public void valueChanged(TreeSelectionEvent e) {
-                        String tmppath = e.getPath().toString();
-                        tmppath = tmppath.substring(1, tmppath.length() - 1);
-                        
-                        String[] arrtmp = tmppath.toString().split(",");
-                        lblResAppl.setText("NO");
-                        lblResKind.setText("NO");
-                        lblResTx.setText("NO");
-                        if (arrtmp.length > 1) lblResAppl.setText(arrtmp[1]);
-                        if (arrtmp.length > 2) lblResKind.setText(arrtmp[2]);
-                        if (arrtmp.length > 3) lblResTx.setText(arrtmp[3]);
-                    }
+        if (xTreeRes == null) {
+        
+        	xTreeRes = new JTree(root);
+//        	xTreeRes.addTreeSelectionListener( new TreeSelectionListener()
+//	                {
+//	                    public void valueChanged(TreeSelectionEvent e) {
+//	                    	System.out.println("xTreRes aaa 3");
+//	                        String tmppath = e.getPath().toString();
+//	                        tmppath = tmppath.substring(1, tmppath.length() - 1);
+//	                        
+//	                        String[] arrtmp = tmppath.toString().split(",");
+//	                        lblResAppl.setText("NO");
+//	                        lblResKind.setText("NO");
+//	                        lblResTx.setText("NO");
+//	                        if (arrtmp.length > 1) lblResAppl.setText(arrtmp[1]);
+//	                        if (arrtmp.length > 2) lblResKind.setText(arrtmp[2]);
+//	                        if (arrtmp.length > 3) lblResTx.setText(arrtmp[3]);
+//	                    }
+//	                }
+//	        );
+        	xTreeRes.expandRow(1);
+        	xTreeRes.expandRow(2);
+	    
+	        JScrollPane myPaneSubtree1 = new JScrollPane(xTreeRes);
+	        myPaneSubtree1.setAutoscrolls(true);
+	  
+	        return myPaneSubtree1;
+        }
+        else {
+        
+        	xTreeRes.removeAll();
+        	xTreeRes = new JTree(root);
+        	/* 테스트 추가 */
+        	xTreeRes.addTreeSelectionListener( new TreeSelectionListener()
+            {
+                public void valueChanged(TreeSelectionEvent e) {
+                	System.out.println("xTreRes aaa 3");
+                    String tmppath = e.getPath().toString();
+                    tmppath = tmppath.substring(1, tmppath.length() - 1);
+                    
+                    String[] arrtmp = tmppath.toString().split(",");
+                    lblResAppl.setText("NO");
+                    lblResKind.setText("NO");
+                    lblResTx.setText("NO");
+                    if (arrtmp.length > 1) lblResAppl.setText(arrtmp[1]);
+                    if (arrtmp.length > 2) lblResKind.setText(arrtmp[2]);
+                    if (arrtmp.length > 3) lblResTx.setText(arrtmp[3]);
                 }
-        );
-        xTree.expandRow(1);
-    
-        JScrollPane myPaneSubtree1 = new JScrollPane(xTree);
-        myPaneSubtree1.setAutoscrolls(true);
-  
-        return myPaneSubtree1;
-  
+            }
+    );
+        	/* 테스트 추가 */
+        	xTreeRes.expandRow(1);
+        	xTreeRes.expandRow(2);
+     
+            JScrollPane myPaneSubtree1 = new JScrollPane(xTreeRes);
+            myPaneSubtree1.setAutoscrolls(true);
+        	splitPane4.setRightComponent(myPaneSubtree1);
+        	splitPane4.updateUI();
+	        
+        }
+       return null;
 	}
 	private JPanel Init_Button()
 	{
@@ -401,11 +596,18 @@ public class TCheckPanelResMap {
 	}
     public void myPaneTableRefresh()
     {
+        String selectedapplcode = "";
+        try{
+            selectedapplcode = ((String)combreqappl.getSelectedItem()).split("-")[0].trim();
+        }catch(Exception e){
+        	return;
+        }
+        
    	    if (permitroot == null) return;
     	permitroot.removeAllChildren();
     	
     	String[] gridData = new String[7];
-        String applreslinkinfo = SearchTcheckerResponseLinkInfo();
+        String applreslinkinfo = SearchTcheckerResponseLinkInfo(selectedapplcode);
         String[] arrtmp = applreslinkinfo.split("\n");
         for(int i=0;i < arrtmp.length ;i++){
         	if (arrtmp[i].trim().equals("")) break;
@@ -513,11 +715,10 @@ public class TCheckPanelResMap {
     	
     }
     
-    
-    private String GetApplTxMappingListInfo()
+    private String GetAsyncApplListInfo()
     {
     	try {
-    		String RetData = Communication("READ_TXMAPPING_LIST", "<NODATA>");
+    		String RetData = Communication("READ_ASYNCAPPLIST", "<NODATA>");
         	if (RetData.trim().equals("") || RetData.trim().equals("NOT-FOUND")) {
         		JOptionPane.showMessageDialog(null,"업무별 거래 정보를 가져오지 못했습니다.");
         		return "";
@@ -528,11 +729,24 @@ public class TCheckPanelResMap {
     	}
     	
     }
-    
-    private String SearchTcheckerResponseLinkInfo()
+    private String GetApplTxMappingListInfo(String pApplCode)
     {
     	try {
-    		String RetData = Communication("READ_RESLINK", "NODATA");
+    		String RetData = Communication("READ_TXMAPPING_LIST", pApplCode);
+        	if (RetData.trim().equals("") || RetData.trim().equals("NOT-FOUND")) {
+        		return "";
+        	}
+        	return RetData;
+    	}catch(Exception e) { 
+    		return "";
+    	}
+    	
+    }
+    
+    private String SearchTcheckerResponseLinkInfo(String pApplCode)
+    {
+    	try {
+    		String RetData = Communication("READ_RESLINK", pApplCode);
         	if (RetData.trim().equals("") || RetData.trim().equals("NOT-FOUND")) {
         		return "";
         	}
@@ -545,7 +759,7 @@ public class TCheckPanelResMap {
     {
     	String RetData = Communication("SAVE_RESLINK", savedata);
     	if (RetData.trim().equals("OK")) {
-    		myPaneTableRefresh();
+    		myPaneTableAddRow();
     		JOptionPane.showMessageDialog(null,"거래매핑 정보를 저장 완료하였습니다.");
     	}
     	else {
@@ -556,7 +770,7 @@ public class TCheckPanelResMap {
     {
     	String RetData = Communication("DELETE_RESLINK", savedata);
     	if (RetData.trim().equals("OK")) {
-    		myPaneTableRefresh();
+    		myPaneTableDelRow();
     		JOptionPane.showMessageDialog(null,"거래매핑 정보를 삭제 완료하였습니다.");
     	}
     	else {
@@ -573,7 +787,7 @@ public class TCheckPanelResMap {
     	try {
     		one_client = new Socket();
 	        one_client.connect(new InetSocketAddress(GetRegister("TCHECKER_ANYLINKIP"), Integer.parseInt(GetRegister("TCHECKER_ANYLINKPORT"))), 3000);  //3초 기다림
-            one_client.setSoTimeout(5000);
+            one_client.setSoTimeout(60000);
             
             dos = new DataOutputStream(one_client.getOutputStream());
             dis = new DataInputStream(one_client.getInputStream());
@@ -623,8 +837,6 @@ public class TCheckPanelResMap {
     	}
     	
     	return "";
-    	
-    	 
     }
     private String GetRegister(String pKey)
     {
@@ -633,5 +845,63 @@ public class TCheckPanelResMap {
     		return userRootPrefs.get(pKey, "");
     	}
     	return "";
+    }
+    
+    private void myPaneTableAddRow()
+    {
+    	//리스트에 동일한 row가 있으면, 포트번호만 Update 한다.
+        for(int i=0;i < permitroot.getChildCount();i++){
+        	DefaultMutableTreeNode dataNode = (DefaultMutableTreeNode) permitroot.getChildAt(i);  
+        	myResMapComm data = (myResMapComm) dataNode.getUserObject();  
+			
+			if (data.getReqApplName().equals(lblReqAppl.getText())
+			   && data.getReqKindName().equals(lblReqKind.getText())
+			   && data.getReqTxName().equals(lblReqTx.getText())
+			   && data.getResApplName().equals(lblResAppl.getText())
+			   && data.getResKindName().equals(lblResKind.getText())
+			   && data.getResTxName().equals(lblResTx.getText())
+			) 
+			{
+				data.setPontNo( txtResPortNo.getText());
+				myPaneTxTable.updateUI();
+				return ;
+			}
+        }
+ 
+    	permitroot.add(new DefaultMutableTreeNode(new myResMapComm(
+    			lblReqAppl.getText().trim(),
+    			lblReqKind.getText().trim(),
+    			lblReqTx.getText().trim(),
+    			lblResAppl.getText().trim(),
+    		    lblResKind.getText().trim(),
+    			lblResTx.getText().trim(),
+    		    txtResPortNo.getText(), 
+                false)));
+       myPaneTxTable.setTreeTableModel(new myResMapModel(permitroot));
+       myPaneTxTable.updateUI();
+    }
+    
+    private void myPaneTableDelRow()
+    {
+    	//리스트에 동일한 row가 있으면, 포트번호만 Update 한다.
+        for(int i=0;i < permitroot.getChildCount();i++){
+        	DefaultMutableTreeNode dataNode = (DefaultMutableTreeNode) permitroot.getChildAt(i);  
+        	myResMapComm data = (myResMapComm) dataNode.getUserObject();  
+			
+			if (data.getReqApplName().equals(lblReqAppl.getText())
+			   && data.getReqKindName().equals(lblReqKind.getText())
+			   && data.getReqTxName().equals(lblReqTx.getText())
+			   && data.getResApplName().equals(lblResAppl.getText())
+			   && data.getResKindName().equals(lblResKind.getText())
+			   && data.getResTxName().equals(lblResTx.getText())
+			) 
+			{
+				permitroot.remove(dataNode);
+				myPaneTxTable.updateUI();
+ 
+				return ;
+			}
+        }
+ 
     }
 }

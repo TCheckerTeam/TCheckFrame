@@ -9,7 +9,7 @@ public class UserIODefine {
 	private String KIND_CODE = "";  
 	private String TX_CODE   = ""; 
 	private String RESULT    = "";
- 
+  
 	/*----------------------- System Define Init Logic ---------------------------*/
 	public UserIODefine()
 	{

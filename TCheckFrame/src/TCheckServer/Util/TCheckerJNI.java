@@ -4,7 +4,7 @@ public class TCheckerJNI {
     {
         System.loadLibrary("TCheckerJNI");
     }
-
+ 
     public static native String SendMapper(String pInstCode,String pApplCode, String pKindCode, String pTxCode, 
                                            String pMapperName, String arrpRecvData);
  

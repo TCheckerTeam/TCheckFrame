@@ -18,7 +18,7 @@ public class ICheckStart {
 
 	private static TCheckerLog   TCHECKERLOG  = null;
 	private static DBManager     DBMANAGER    = null;
-
+ 
 	public static void main(String[] args) {
 		try{
 			String procname = ManagementFactory.getRuntimeMXBean().getName(); 

@@ -12,7 +12,7 @@ public class ThreadUrlMain extends Thread{
     { 
     	COMMDATA = commdata;
     }
-  
+   
 	public void run()
 	{
 		while(!Thread.currentThread().isInterrupted()) {
