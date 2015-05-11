@@ -139,12 +139,17 @@ public class ThreadTcpServer extends Thread{
              
             	//Head Buffer 생성 및 읽기
             	HEAD = new byte[Integer.parseInt(COMMDATA.GetCOMM_HEAD_SIZE())];
-            	for(int i=0;i < HEAD.length ;i++)  HEAD[i] = disWork.readByte();
- 
-            	for(int i=0;i < HEAD.length ;i++)  {
-            		if (HEAD[i] == (byte)0) HEAD[i] = (byte)32;
+            	for(int i=0;i < HEAD.length ;i++){
+            		
+            		HEAD[i] = disWork.readByte();
             	}
- 
+            	
+//            	for(int i=0;i < HEAD.length ;i++)  {
+//            		if (HEAD[i] == (byte)0){
+//            			HEAD[i] = (byte)32;
+//            		}
+//            	}
+            	
             	//Body Buffer 생성 및 일기
             	if (COMMDATA.GetLEN_TYPE().equals("10")){
  
@@ -158,8 +163,27 @@ public class ThreadTcpServer extends Thread{
             		}
              	}
             	else if (COMMDATA.GetLEN_TYPE().equals("50")){
+            		COMMDATA.GetTCheckerLog().WriteLog("D", "TcpManager", "SERVER:[" + COMMDATA.GetAPPL_CODE()+ "]");
             		//길이필드 이후의 길이값(Integer) : 공통헤더일 경우에 메세지의 전체크기에서 길이 Offset 및 길이 Size 를 뺀 결과값을 길이정보로 설정한다.
-            		int tmplen = HEAD[Integer.parseInt(COMMDATA.GetLEN_OFFST()) + 0] * 256 + HEAD[Integer.parseInt(COMMDATA.GetLEN_OFFST()) + 1];
+            		           		
+            		//int tmplen = HEAD[Integer.parseInt(COMMDATA.GetLEN_OFFST()) + 0] * 256 + HEAD[Integer.parseInt(COMMDATA.GetLEN_OFFST()) + 1];
+            		
+            		int tmplen=0;
+            		
+            		if(HEAD[Integer.parseInt(COMMDATA.GetLEN_OFFST()) + 0] < 0){			
+            			tmplen += (HEAD[Integer.parseInt(COMMDATA.GetLEN_OFFST()) + 0] + 256)*256;
+            			
+            		}else{
+            			tmplen += HEAD[Integer.parseInt(COMMDATA.GetLEN_OFFST()) + 0] *256;
+            		}
+            		
+            		if(HEAD[Integer.parseInt(COMMDATA.GetLEN_OFFST()) + 1] < 0){
+            			tmplen += HEAD[Integer.parseInt(COMMDATA.GetLEN_OFFST()) + 1]+256; 
+            		}else{
+            			tmplen += HEAD[Integer.parseInt(COMMDATA.GetLEN_OFFST()) + 1];
+            		}
+            		            		
+            		COMMDATA.GetTCheckerLog().WriteLog("D", "TcpManager", "SERVER Len(HEX) : [" + tmplen+ "]");
             		READDATA = new byte[tmplen];
             		for(int i=0;i < tmplen ;i++) READDATA[i] = disWork.readByte();
             	}
@@ -195,7 +219,20 @@ public class ThreadTcpServer extends Thread{
             		tmplenval = Integer.parseInt(new String(tmplenbyte));
         		}
         		else {
-        			tmplenval = HEAD[Integer.parseInt(COMMDATA.GetLEN_OFFST()) + 0] * 256 + HEAD[Integer.parseInt(COMMDATA.GetLEN_OFFST()) + 1];
+        			//tmplenval = HEAD[Integer.parseInt(COMMDATA.GetLEN_OFFST()) + 0] * 256 + HEAD[Integer.parseInt(COMMDATA.GetLEN_OFFST()) + 1];
+        			
+        			if(HEAD[Integer.parseInt(COMMDATA.GetLEN_OFFST()) + 0] < 0){			
+        				tmplenval += (HEAD[Integer.parseInt(COMMDATA.GetLEN_OFFST()) + 0] + 256)*256;
+            			
+            		}else{
+            			tmplenval += HEAD[Integer.parseInt(COMMDATA.GetLEN_OFFST()) + 0] *256;
+            		}
+            		
+            		if(HEAD[Integer.parseInt(COMMDATA.GetLEN_OFFST()) + 1] < 0){
+            			tmplenval += HEAD[Integer.parseInt(COMMDATA.GetLEN_OFFST()) + 1]+256; 
+            		}else{
+            			tmplenval += HEAD[Integer.parseInt(COMMDATA.GetLEN_OFFST()) + 1];
+            		}
         		}
 
             	//Body Buffer 생성 및 일기
@@ -249,12 +286,21 @@ public class ThreadTcpServer extends Thread{
             if (COMMDATA.GetCOMM_HEAD_TYPE().equals("3")){
             	//End문자 방식일 경우에 메세지를 그대로 리턴한다.
             	
+            	
             	RecvCnt = 0;
             	try {
             		RecvData = new byte[50000];
+            		
 	            	for(int i=0;i < RecvData.length ;i++) {
 	            		RecvData[i] = disWork.readByte();
-	            		RecvCnt++;
+	            		
+	            		if( i > 0 && RecvData[i-1] == (byte)0xFF && RecvData[i] == (byte)0xEF ) {
+	            		//COMMDATA.GetTCheckerLog().WriteLog("W", "TcpManager", " rcv : "+String.format("0x%02X", RecvData[i]));
+	            		//if( i > 0 && String.format("0x%02X", RecvData[i-1]).equals("0xFF") && String.format("0x%02X", RecvData[i]).equals("0xEF")) {
+	            			RecvCnt = i+1;
+	            			break;
+	            		}	            		
+	            		
 	            	}
             	}catch(EOFException e) {
             		String errmsg = "SERVER:" + COMMDATA.GetAPPL_CODE()+ ":NONE:NONE:Anylink에서 회선을 종료했습니다.[" + COMMDATA.GetLU_NAME() + "]";
@@ -263,13 +309,15 @@ public class ThreadTcpServer extends Thread{
             		return null;
             	}catch(Exception e) {}
             	
+    			
             	if (RecvCnt < 10) return null;
             	
         		//수신데이타 Parsing
         		READDATA = new byte[RecvCnt];
         	    System.arraycopy(RecvData,0, READDATA, 0, READDATA.length);
         	    getCurrentStatus();       	 
-            } 
+            }
+
     	}catch(EOFException e) {
     		String errmsg = "SERVER:" + COMMDATA.GetAPPL_CODE()+ ":NONE:NONE:Anylink에서 회선을 종료했습니다.[" + COMMDATA.GetLU_NAME() + "]";
     		COMMDATA.GetTCheckerLog().WriteLog("W", "TcpManager", errmsg);
