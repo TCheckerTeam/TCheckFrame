@@ -62,11 +62,16 @@ public class ThreadTcpClient extends Thread{
     }
     public void run()
     {
+    	//boolean UseFlag = true;
+    	//COMMDATA.GetTCheckerLog().WriteLog("I", "TcpManager", " ** TcpCleint Start UseFlag : ["+UseFlag+"]");
+    	
     	while(true) {
         	  
+    		 
+    		
 	          String   lineinfo = Proc_DBGetTchecker_LineInfo();
         	  String[] arrtmp = lineinfo.split("\t");
-
+        	  
         	  COMMDATA.SetAPPL_CODE     (arrtmp[0]);
         	  COMMDATA.SetLU_NAME       (arrtmp[1]);
         	  COMMDATA.SetCONNECT_TYPE  (arrtmp[2]);
@@ -77,14 +82,24 @@ public class ThreadTcpClient extends Thread{
         	  COMMDATA.SetLEN_OFFST     (arrtmp[7]);
         	  COMMDATA.SetLEN_SIZE      (arrtmp[8]);
         	  
-        	  String   outlineinfo = Proc_DBGetOut_LineInfo();
- 
-    		  String errmsg = "SERVER:" + COMMDATA.GetAPPL_CODE()+ ":NONE:NONE:회선을 연결합니다.[" + COMMDATA.GetLU_NAME() + "]";
-    		  COMMDATA.GetTCheckerLog().WriteLog("I", "TcpManager", errmsg);
-    		  
-    		  run_Main();
- 
-    		  this.setThreadSleep(10000);
+        	  if(COMMDATA.GetSTA_TYPE().equals("1")){
+        	  
+	        	  String   outlineinfo = Proc_DBGetOut_LineInfo();
+	 
+	    		  String errmsg = "SERVER:" + COMMDATA.GetAPPL_CODE()+ ":NONE:NONE:회선을 연결합니다.[" + COMMDATA.GetLU_NAME() + "]";
+	    		  COMMDATA.GetTCheckerLog().WriteLog("I", "TcpManager", errmsg);
+	    		  
+	    		  run_Main();
+	 
+	    		  this.setThreadSleep(10000);
+	    		  
+	    		  
+	       	  }else{
+	       		 
+	       		 COMMDATA.GetTCheckerLog().WriteLog("I", "TcpManager", "["+COMMDATA.GetLU_NAME()+"] PORT 회선설정의 사용여부가 미사용 입니다. ");
+	       		this.setThreadSleep(10000);
+	       	  }
+        	  
     	}
     }
     public void run_Main()
@@ -163,10 +178,25 @@ public class ThreadTcpClient extends Thread{
 		while(!Thread.currentThread().isInterrupted()) {
 			setThreadSleep(200);
  
-	        if (SendReceiveMsg() != true) {
- 				CommonSocketclose();
- 				return;
-	        }
+			/*
+			 * Manager 의 회선 설정이 미사용 이면 회선 중지
+			 */
+			String   lineinfo = Proc_DBGetTchecker_LineInfo();
+			
+			//COMMDATA.GetTCheckerLog().WriteLog("I", "TcpManager", "["+COMMDATA.GetLU_NAME()+"] Line Info : ["+lineinfo+"]");
+			
+			if(!lineinfo.equals("NOT-FOUND")){
+	      	    String[] arrtmp = lineinfo.split("\t");
+	      	    if(arrtmp[3].equals("2")){
+	      	    	COMMDATA.GetTCheckerLog().WriteLog("I", "TcpManager", "["+COMMDATA.GetLU_NAME()+"] PORT 회선설정의 사용여부가 미사용 입니다. ");
+	      	    }
+				
+		        if (SendReceiveMsg() != true || arrtmp[3].equals("2")) {
+		        	COMMDATA.GetTCheckerLog().WriteLog("I", "TcpManager", "["+COMMDATA.GetLU_NAME()+"] PORT 회선설정을 종료합니다. ");
+	 				CommonSocketclose();
+	 				return;
+		        }
+			}
 	        
 		}
 		
